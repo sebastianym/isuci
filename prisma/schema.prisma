@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+
+enum Rol {
+  CICLISTA
+  MASAJISTA
+  DIRECTOR_DEPORTIVO
+  ADMIN
+}
+
+enum Especialidad {
+  ESCALADORES
+  RODADORES
+  SPRINTERS
+  GREGARIOS
+  CLASICOMANOS
+  CONTRARRELOJISTA
+}
+
+enum TipoEtapa {
+  MONTANA
+  LLANO_CON_CURVAS
+  SEMI_LLANO
+  UN_SOLO_DIA
+  LLANO_EN_RECTA
+}
+
+enum CiclistaAdecuado {
+  ESCALADORES
+  RODADORES
+  SPRINTERS
+  GREGARIOS
+  CLASICOMANOS
+  CONTRARRELOJISTA
+}
+
+enum Genero {
+  MASCULINO
+  FEMENINO
+}
+
+enum Contextura {
+  MUY_DELGADA
+  DELGADA
+  MEDIA
+}
+
+model Usuario {
+  id                Int           @id @default(autoincrement())
+  nombre            String
+  cedula            String
+  correoElectronico String
+  contrasena        String
+  genero            Genero
+  edad              Int
+  experiencia       Int
+  nacionalidad      String
+  rol               Rol
+  tiempoAcumuladoCarrera Int?  @default(0)
+  especialidad      Especialidad?
+  contextura        Contextura?
+  escuadra          Escuadra?     @relation(fields: [escuadraId], references: [id])
+  carrerasGanadas   Carrera[]
+  escuadraId        Int?
+}
+
+model Escuadra {
+  id              Int       @id @default(autoincrement())
+  nombre          String
+  paisOrigen      String
+  tiempoAcumulado Int
+  usuarios        Usuario[]
+}
+
+model Carrera {
+  id               Int              @id @default(autoincrement())
+  tipoEtapa        TipoEtapa
+  ciclistaAdecuado CiclistaAdecuado
+  ganador          Usuario?         @relation(fields: [usuarioId], references: [id]) 
+  usuarioId        Int?
+}
