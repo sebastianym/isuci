@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Login from "../components/auth/Login";
+import Login from "@/components/auth/Login";
 
-export default function Home() {
+function Home() {
   const router = useRouter();
 
   useEffect(() => {
@@ -19,3 +19,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default Home;

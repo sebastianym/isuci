@@ -23,10 +23,10 @@ function Login() {
     const updatedInfoForm = { ...infoFormulario };
 
     usuario === ""
-      ? (updatedInfoForm.usuarioInput = "Usuario obligatorio")
+      ? (updatedInfoForm.usuarioInput = " - Campo obligatorio")
       : (updatedInfoForm.usuarioInput = "");
     contraseña === ""
-      ? (updatedInfoForm.contraseñaInput = "Contraseña obligatoria")
+      ? (updatedInfoForm.contraseñaInput = " - Campo obligatoria")
       : (updatedInfoForm.contraseñaInput = "");
 
     setInfoFormulario(updatedInfoForm);
@@ -64,16 +64,6 @@ function Login() {
             />
           </div>
           <div className="lg:w-1/2 mt-5 xl:p-20 lg:!p-12 p-12 !pb-6 max-sm:p-14 rounded-r-2xl max-lg:rounded-xl lg:order-1 order-1">
-            {infoFormulario.usuarioInput && (
-              <p className="text-white font-bold bg-red-500 text-center p-2 text-sm select-none mb-2">
-                {infoFormulario.usuarioInput}
-              </p>
-            )}
-            {infoFormulario.contraseñaInput && (
-              <p className="text-white font-bold bg-red-500 text-center p-2 text-sm select-none">
-                {infoFormulario.contraseñaInput}
-              </p>
-            )}
             <div className="my-5">
               <h1 className="text-3xl font-semibold xl:mb-8 mb-10 w-full py-5 text-white">
                 ISUCI 🚵
@@ -89,7 +79,9 @@ function Login() {
               <label>
                 <p className="text-white/80 font-medium">
                   Usuario
-                  <br />
+                  <span className="text-red-500 font-medium text-sm select-none">
+                    {infoFormulario.usuarioInput}
+                  </span>
                 </p>
               </label>
               <input
@@ -105,7 +97,9 @@ function Login() {
               <label>
                 <p className="text-white/80 font-medium">
                   Contraseña
-                  <br />
+                  <span className="text-red-500 font-medium text-sm select-none">
+                    {infoFormulario.contraseñaInput}
+                  </span>
                 </p>
               </label>
               <input
@@ -126,10 +120,10 @@ function Login() {
                 Iniciar sesión
               </button>
               <Link
-                href={"/"}
+                href={"/registro"}
                 className="w-fit mb-1 mt-5 font-medium block text-gray-white"
               >
-                ¿Olvidaste tu contraseña?
+                ¿Aún no tienes una cuenta? Registrarse
               </Link>
             </form>
           </div>
