@@ -26,6 +26,7 @@ function Register() {
     rolInput: "",
     especialidadInput: "",
     contexturaInput: "",
+    nacionalidadInput: "",
   });
 
   useEffect(() => {
@@ -121,7 +122,9 @@ function Register() {
     contextura === ""
       ? (updatedInfoForm.contexturaInput = " - Campo obligatorio")
       : (updatedInfoForm.contexturaInput = "");
-
+    nacionalidad === ""
+        ? (updatedInfoForm.nacionalidadInput = " - Campo obligatorio")
+        : (updatedInfoForm.nacionalidadInput = "");
     setInfoFormulario(updatedInfoForm);
 
     if (
@@ -279,7 +282,7 @@ function Register() {
                 <p className="text-white/80 font-medium">
                   Nacionalidad
                   <span className="text-red-500 font-medium text-sm select-none">
-                    {infoFormulario.generoInput}
+                    {infoFormulario.nacionalidadInput}
                   </span>
                   {paises.map((pais) =>
                     pais.name.common === nacionalidad ? (
@@ -316,7 +319,7 @@ function Register() {
                 <p className="text-white/80 font-medium">
                   Rol
                   <span className="text-red-500 font-medium text-sm select-none">
-                    {infoFormulario.generoInput}
+                    {infoFormulario.rolInput}
                   </span>
                 </p>
               </label>
@@ -338,7 +341,7 @@ function Register() {
                     <p className="text-white/80 font-medium">
                       Especialidad
                       <span className="text-red-500 font-medium text-sm select-none">
-                        {infoFormulario.generoInput}
+                        {infoFormulario.especialidadInput}
                       </span>
                     </p>
                   </label>
@@ -360,7 +363,7 @@ function Register() {
                     <p className="text-white/80 font-medium">
                       Contextura
                       <span className="text-red-500 font-medium text-sm select-none">
-                        {infoFormulario.generoInput}
+                        {infoFormulario.contexturaInput}
                       </span>
                     </p>
                   </label>
