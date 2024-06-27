@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 
 function Register() {
   const [nombre, setNombre] = useState("");
@@ -13,6 +13,9 @@ function Register() {
   const [rol, setRol] = useState("");
   const [especialidad, setEspecialidad] = useState("");
   const [contextura, setContextura] = useState("");
+  const [paises, setPaises] = useState([]);
+  const [nacionalidad, setNacionalidad] = useState("");
+  const [loadingPaises, setLoadingPaises] = useState(true);
   const [infoFormulario, setInfoFormulario] = useState({
     nombreInput: "",
     cedulaInput: "",
@@ -24,6 +27,22 @@ function Register() {
     especialidadInput: "",
     contexturaInput: "",
   });
+
+  useEffect(() => {
+    const fetchPaises = async () => {
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        const data = await response.json();
+        setPaises(data);
+      } catch (error) {
+        console.error("Error al obtener los países", error);
+      } finally {
+        setLoadingPaises(false);
+      }
+    };
+
+    fetchPaises();
+  }, []);
 
   const handleNombreChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNombre(event.target.value);
@@ -61,6 +80,10 @@ function Register() {
     setContextura(event.target.value);
   };
 
+  const handleNacionalidadChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setNacionalidad(event.target.value);
+  };
+
   function emailIsValid(correo: string) {
     return /\S+@\S+\.\S+/.test(correo);
   }
@@ -71,7 +94,7 @@ function Register() {
     nombre === ""
       ? (updatedInfoForm.nombreInput = " - Campo obligatorio")
       : (updatedInfoForm.nombreInput = "");
-    cedula === "" || parseInt(cedula) < 10 || parseInt(cedula) > 10
+    cedula === "" || cedula.length !== 10
       ? (updatedInfoForm.cedulaInput = " - Campo no válido")
       : (updatedInfoForm.cedulaInput = "");
     correo === "" || emailIsValid(correo) === false
@@ -85,7 +108,8 @@ function Register() {
       : (updatedInfoForm.edadInput = "");
     experiencia === "" ||
     parseInt(experiencia) < 0 ||
-    parseInt(experiencia) > 50
+    parseInt(experiencia) > 50 ||
+    parseInt(experiencia) > parseInt(edad) - 15
       ? (updatedInfoForm.experienciaInput = " - Experiencia no válida")
       : (updatedInfoForm.experienciaInput = "");
     rol === ""
@@ -101,13 +125,14 @@ function Register() {
     setInfoFormulario(updatedInfoForm);
 
     if (
-      nombre != "" &&
-      cedula != "" &&
-      correo != "" &&
-      genero != "" &&
-      edad != "" &&
-      experiencia != "" &&
-      rol != ""
+      nombre !== "" &&
+      cedula !== "" &&
+      correo !== "" &&
+      genero !== "" &&
+      edad !== "" &&
+      experiencia !== "" &&
+      rol !== "" &&
+      nacionalidad !== ""
     ) {
       return true;
     } else {
@@ -252,6 +277,43 @@ function Register() {
               />
               <label>
                 <p className="text-white/80 font-medium">
+                  Nacionalidad
+                  <span className="text-red-500 font-medium text-sm select-none">
+                    {infoFormulario.generoInput}
+                  </span>
+                  {paises.map((pais) =>
+                    pais.name.common === nacionalidad ? (
+                      <img
+                        key={pais.cca2}
+                        src={pais.flags?.svg || ""}
+                        alt={pais.name.common}
+                        className="inline-block w-6 h-4 ml-2"
+                      />
+                    ) : null
+                  )}
+                </p>
+              </label>
+              {loadingPaises ? (
+                <p className="text-white/80 font-medium">Cargando países...</p>
+              ) : (
+                <select
+                  onChange={handleNacionalidadChange}
+                  className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                >
+                  <option disabled selected>
+                    -- Selecciona tu Nacionalidad --
+                  </option>
+                  {paises.map((pais) =>
+                    typeof pais !== "object" || pais === null ? null : (
+                      <option key={pais.cca2} value={pais.name.common}>
+                        {pais.name.common}
+                      </option>
+                    )
+                  )}
+                </select>
+              )}
+              <label>
+                <p className="text-white/80 font-medium">
                   Rol
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.generoInput}
@@ -269,6 +331,7 @@ function Register() {
                 <option value="2">Masajista</option>
                 <option value="3">Director deportivo</option>
               </select>
+
               {rol === "1" ? (
                 <div>
                   <label>
