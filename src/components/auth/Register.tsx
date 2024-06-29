@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, useState, useEffect } from "react";
+import { successAlert } from "@/libs/functions/popUpAlert";
 
 function Register() {
   const [nombre, setNombre] = useState("");
@@ -123,8 +124,8 @@ function Register() {
       ? (updatedInfoForm.contexturaInput = " - Campo obligatorio")
       : (updatedInfoForm.contexturaInput = "");
     nacionalidad === ""
-        ? (updatedInfoForm.nacionalidadInput = " - Campo obligatorio")
-        : (updatedInfoForm.nacionalidadInput = "");
+      ? (updatedInfoForm.nacionalidadInput = " - Campo obligatorio")
+      : (updatedInfoForm.nacionalidadInput = "");
     setInfoFormulario(updatedInfoForm);
 
     if (
@@ -151,6 +152,12 @@ function Register() {
 
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
+    if (inputValidation) {
+      successAlert(
+        "Usuario registrado",
+        "Se enviará al correo la información de acceso"
+      );
+    }
   };
 
   return (
