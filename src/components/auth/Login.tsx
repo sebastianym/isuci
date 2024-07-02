@@ -2,18 +2,23 @@
 
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { errorAlert } from "@/libs/functions/popUpAlert";
+import { useRouter } from "next/navigation";
+import bcrypt from "bcryptjs";
 
 function Login() {
-  const [usuario, setUsuario] = useState("");
+  const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [infoFormulario, setInfoFormulario] = useState({
-    usuarioInput: "",
+    correoInput: "",
     contraseñaInput: "",
   });
 
+  const router = useRouter();
+
   const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setUsuario(event.target.value);
+    setCorreo(event.target.value);
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -23,16 +28,16 @@ function Login() {
   const checkInfoForm = () => {
     const updatedInfoForm = { ...infoFormulario };
 
-    usuario === ""
-      ? (updatedInfoForm.usuarioInput = " - Campo obligatorio")
-      : (updatedInfoForm.usuarioInput = "");
+    correo === ""
+      ? (updatedInfoForm.correoInput = " - Campo obligatorio")
+      : (updatedInfoForm.correoInput = "");
     contraseña === ""
       ? (updatedInfoForm.contraseñaInput = " - Campo obligatoria")
       : (updatedInfoForm.contraseñaInput = "");
 
     setInfoFormulario(updatedInfoForm);
 
-    if (usuario != "" && contraseña != "") {
+    if (correo != "" && contraseña != "") {
       return true;
     } else {
       return false;
@@ -48,12 +53,17 @@ function Login() {
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
 
-    if(inputValidation){
-      await signIn("credentials", {
-        correo: usuario,
+    if (inputValidation) {
+      const res = await signIn("credentials", {
+        correo: correo,
         password: contraseña,
         redirect: false,
       });
+      if (res?.error) {
+        errorAlert("Error al iniciar sesión", res.error);
+      } else {
+        router.push("/panel");
+      }
     }
   };
 
@@ -87,18 +97,18 @@ function Login() {
             <form>
               <label>
                 <p className="text-white/80 font-medium">
-                  Usuario
+                  Correo electrónico
                   <span className="text-red-500 font-medium text-sm select-none">
-                    {infoFormulario.usuarioInput}
+                    {infoFormulario.correoInput}
                   </span>
                 </p>
               </label>
               <input
                 className="w-full h-12  pl-5 pr-3 rounded-md mb-5 mt-2 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
                 type="email"
-                value={usuario}
+                value={correo}
                 onChange={handleUsernameChange}
-                placeholder="Ingresa tu usuario"
+                placeholder="Ingresa tu correo electrónico"
                 onKeyPress={handleKeyPress}
                 autoComplete="username"
               />

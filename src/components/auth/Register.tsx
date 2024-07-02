@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 import { ChangeEvent, useState, useEffect } from "react";
 import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
 import { useRouter } from "next/navigation";
@@ -36,13 +36,14 @@ function Register() {
   const router = useRouter();
 
   function crearContraseña() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let password = '';
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let password = "";
     for (let i = 0; i < 8; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
       password += characters[randomIndex];
     }
-    setContrasena(password);
+    setContrasena("1234");
   }
 
   async function crearCiclista(
@@ -56,6 +57,8 @@ function Register() {
     contextura: string,
     nacionalidad: string
   ) {
+    crearContraseña();
+    var hash = await bcrypt.hashSync(contrasena, 10);
     const res = await fetch("/api/ciclista", {
       method: "POST",
       headers: {
@@ -65,7 +68,7 @@ function Register() {
         nombre,
         cedula,
         correoElectronico,
-        contrasena: "124567",
+        contrasena: hash,
         genero,
         edad: parseInt(edad),
         experiencia: parseInt(experiencia),
@@ -87,7 +90,7 @@ function Register() {
     nacionalidad: string
   ) {
     crearContraseña();
-    var hash = await bcrypt.hashSync(contrasena, 10);
+    var hash = await bcrypt.hashSync("1234", 10);
     const res = await fetch("/api/directorDeportivo", {
       method: "POST",
       headers: {
@@ -116,7 +119,7 @@ function Register() {
     experiencia: string
   ) {
     crearContraseña();
-    var hash = bcrypt.hashSync(contrasena, 10);
+    var hash = bcrypt.hash(contrasena, 10);
     console.log(hash);
     const res = await fetch("/api/masajista", {
       method: "POST",
@@ -131,6 +134,21 @@ function Register() {
         genero,
         edad: parseInt(edad),
         experiencia: parseInt(experiencia),
+      }),
+    });
+    const data = await res.json();
+    return data;
+  }
+
+  async function enviarEmail(correoElectronico: string, contrasena: string) {
+    const res = await fetch("/api/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        correoElectronico,
+        contrasena,
       }),
     });
     const data = await res.json();
@@ -299,6 +317,7 @@ function Register() {
         "Usuario registrado",
         "Se enviará al correo la información de acceso"
       );
+      await enviarEmail(correoElectronico, contrasena);
       router.push("/");
     }
   };

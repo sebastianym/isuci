@@ -27,24 +27,41 @@ const authOptions = {
             correoElectronico: credentials?.correo,
           },
         });
-      
-        if (!ciclista && !masajista && !directorDeportivo) return null;
-      
+
+        if (!ciclista && !masajista && !directorDeportivo)
+          throw new Error("No se encontró el usuario");
+
         const matchPassword = await bcrypt.compare(
           credentials?.password || "",
           ciclista?.contrasena ||
             masajista?.contrasena ||
             directorDeportivo?.contrasena ||
-            "123456"
+            "1"
         );
-      
-        if (!matchPassword) return null;
-      
+
+        if (!matchPassword) throw new Error("Contraseña incorrecta");
+
         return {
-            id: String(ciclista?.id || masajista?.id || directorDeportivo?.id || 0),
-            name: ciclista?.nombre || masajista?.nombre || directorDeportivo?.nombre || "",
-            email: ciclista?.correoElectronico || masajista?.correoElectronico || directorDeportivo?.correoElectronico || "",
-            role: ciclista ? "ciclista" : masajista ? "masajista" : directorDeportivo ? "directorDeportivo" : "",
+          id: String(
+            ciclista?.id || masajista?.id || directorDeportivo?.id || 0
+          ),
+          name:
+            ciclista?.nombre ||
+            masajista?.nombre ||
+            directorDeportivo?.nombre ||
+            "",
+          email:
+            ciclista?.correoElectronico ||
+            masajista?.correoElectronico ||
+            directorDeportivo?.correoElectronico ||
+            "",
+          role: ciclista
+            ? "ciclista"
+            : masajista
+            ? "masajista"
+            : directorDeportivo
+            ? "directorDeportivo"
+            : "",
         };
       },
     }),
