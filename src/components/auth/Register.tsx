@@ -10,7 +10,7 @@ function Register() {
   const [nombre, setNombre] = useState("");
   const [cedula, setCedula] = useState("");
   const [correoElectronico, setCorreoElectronico] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [contrasena, setContrasena] = useState("1234");
   const [genero, setGenero] = useState("");
   const [edad, setEdad] = useState("");
   const [experiencia, setExperiencia] = useState("");
@@ -310,15 +310,17 @@ function Register() {
             nacionalidad
           );
         }
-      } catch (error) {
-        errorAlert("Error al registrar", "Inténtalo de nuevo más tarde");
+
+        successAlert(
+          "Usuario registrado",
+          "Se enviará al correo la información de acceso"
+        );
+        await enviarEmail(correoElectronico, contrasena);
+        router.push("/");
+      } catch (error: any) {
+        errorAlert("Error al registrar usuario", error.message);
+        return;
       }
-      successAlert(
-        "Usuario registrado",
-        "Se enviará al correo la información de acceso"
-      );
-      await enviarEmail(correoElectronico, contrasena);
-      router.push("/");
     }
   };
 
@@ -405,7 +407,7 @@ function Register() {
               </label>
               <select
                 onChange={handleGeneroChange}
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
               >
                 <option disabled selected>
                   -- Selecciona genero --
@@ -470,7 +472,7 @@ function Register() {
               ) : (
                 <select
                   onChange={handleNacionalidadChange}
-                  className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                  className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
                 >
                   <option disabled selected>
                     -- Selecciona tu Nacionalidad --
@@ -494,7 +496,7 @@ function Register() {
               </label>
               <select
                 onChange={handleRolChange}
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
               >
                 <option disabled selected>
                   -- Selecciona rol --
@@ -516,7 +518,7 @@ function Register() {
                   </label>
                   <select
                     onChange={handleEspecialidadChange}
-                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
                   >
                     <option disabled selected>
                       -- Selecciona tu especialidad --
@@ -538,7 +540,7 @@ function Register() {
                   </label>
                   <select
                     onChange={handleContexturaChange}
-                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/30 border-none focus:outline-none text-black/90 font-bold placeholder:text-white/20"
                   >
                     <option disabled selected>
                       -- Selecciona tu contextura --

@@ -12,8 +12,8 @@ export async function POST(request: Request, { params }: Params) {
       port: 2525,
       secure: false,
       auth: {
-        user: "f1c7b1b30da59d",
-        pass: "ea723c29fc39cb",
+        user: "0ec85897278dad",
+        pass: "bace844b4c63f8",
       },
     });
 
@@ -68,8 +68,9 @@ export async function POST(request: Request, { params }: Params) {
             </head>
             <body>
                 <div class="container">
-                    <h1>Credenciales de Acceso</h1>
+                    <h1>Bienvenido a ISUCI</h1>
                     <div class="credentials">
+                        <p><strong>- Credenciales de Acceso</p>
                         <p><strong>Correo Electrónico:</strong> ${correoElectronico}</p>
                         <p><strong>Contraseña:</strong> ${contrasena}</p>
                     </div>
