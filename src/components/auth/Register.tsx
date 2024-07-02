@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import bcrypt from 'bcryptjs';
 import { ChangeEvent, useState, useEffect } from "react";
-import { successAlert } from "@/libs/functions/popUpAlert";
+import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
+import { useRouter } from "next/navigation";
 
 function Register() {
   const [nombre, setNombre] = useState("");
   const [cedula, setCedula] = useState("");
-  const [correo, setCorreo] = useState("");
+  const [correoElectronico, setCorreoElectronico] = useState("");
+  const [contrasena, setContrasena] = useState("");
   const [genero, setGenero] = useState("");
   const [edad, setEdad] = useState("");
   const [experiencia, setExperiencia] = useState("");
@@ -29,6 +32,110 @@ function Register() {
     contexturaInput: "",
     nacionalidadInput: "",
   });
+
+  const router = useRouter();
+
+  function crearContraseña() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      password += characters[randomIndex];
+    }
+    setContrasena(password);
+  }
+
+  async function crearCiclista(
+    nombre: string,
+    cedula: string,
+    correoElectronico: string,
+    genero: string,
+    edad: string,
+    experiencia: string,
+    especialidad: string,
+    contextura: string,
+    nacionalidad: string
+  ) {
+    const res = await fetch("/api/ciclista", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombre,
+        cedula,
+        correoElectronico,
+        contrasena: "124567",
+        genero,
+        edad: parseInt(edad),
+        experiencia: parseInt(experiencia),
+        especialidad,
+        contextura,
+        nacionalidad,
+      }),
+    });
+    const data = await res.json();
+    return data;
+  }
+
+  async function crearDirector(
+    nombre: string,
+    cedula: string,
+    correoElectronico: string,
+    genero: string,
+    edad: string,
+    nacionalidad: string
+  ) {
+    crearContraseña();
+    var hash = await bcrypt.hashSync(contrasena, 10);
+    const res = await fetch("/api/directorDeportivo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombre,
+        cedula,
+        correoElectronico,
+        contrasena: hash,
+        genero,
+        edad: parseInt(edad),
+        nacionalidad,
+      }),
+    });
+    const data = await res.json();
+    return data;
+  }
+
+  async function crearMasajista(
+    nombre: string,
+    cedula: string,
+    correoElectronico: string,
+    genero: string,
+    edad: string,
+    experiencia: string
+  ) {
+    crearContraseña();
+    var hash = bcrypt.hashSync(contrasena, 10);
+    console.log(hash);
+    const res = await fetch("/api/masajista", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombre,
+        cedula,
+        correoElectronico,
+        contrasena: hash,
+        genero,
+        edad: parseInt(edad),
+        experiencia: parseInt(experiencia),
+      }),
+    });
+    const data = await res.json();
+    return data;
+  }
 
   useEffect(() => {
     const fetchPaises = async () => {
@@ -55,7 +162,7 @@ function Register() {
   };
 
   const handleCorreoChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setCorreo(event.target.value);
+    setCorreoElectronico(event.target.value);
   };
 
   const handleGeneroChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -86,8 +193,8 @@ function Register() {
     setNacionalidad(event.target.value);
   };
 
-  function emailIsValid(correo: string) {
-    return /\S+@\S+\.\S+/.test(correo);
+  function emailIsValid(correoElectronico: string) {
+    return /\S+@\S+\.\S+/.test(correoElectronico);
   }
 
   const checkInfoForm = () => {
@@ -99,7 +206,7 @@ function Register() {
     cedula === "" || cedula.length !== 10
       ? (updatedInfoForm.cedulaInput = " - Campo no válido")
       : (updatedInfoForm.cedulaInput = "");
-    correo === "" || emailIsValid(correo) === false
+    correoElectronico === "" || emailIsValid(correoElectronico) === false
       ? (updatedInfoForm.correoInput = " - Correo no válido")
       : (updatedInfoForm.correoInput = "");
     genero === ""
@@ -131,7 +238,7 @@ function Register() {
     if (
       nombre !== "" &&
       cedula !== "" &&
-      correo !== "" &&
+      correoElectronico !== "" &&
       genero !== "" &&
       edad !== "" &&
       experiencia !== "" &&
@@ -153,10 +260,46 @@ function Register() {
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
     if (inputValidation) {
+      try {
+        if (rol === "1") {
+          await crearCiclista(
+            nombre,
+            cedula,
+            correoElectronico,
+            genero,
+            edad,
+            experiencia,
+            especialidad,
+            contextura,
+            nacionalidad
+          );
+        } else if (rol === "2") {
+          await crearMasajista(
+            nombre,
+            cedula,
+            correoElectronico,
+            genero,
+            edad,
+            experiencia
+          );
+        } else if (rol === "3") {
+          await crearDirector(
+            nombre,
+            cedula,
+            correoElectronico,
+            genero,
+            edad,
+            nacionalidad
+          );
+        }
+      } catch (error) {
+        errorAlert("Error al registrar", "Inténtalo de nuevo más tarde");
+      }
       successAlert(
         "Usuario registrado",
         "Se enviará al correo la información de acceso"
       );
+      router.push("/");
     }
   };
 
@@ -227,7 +370,7 @@ function Register() {
               <input
                 className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
                 type="email"
-                value={correo}
+                value={correoElectronico}
                 onChange={handleCorreoChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Ingresa tu correo electrónico"

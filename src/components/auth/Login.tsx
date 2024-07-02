@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 
 function Login() {
   const [usuario, setUsuario] = useState("");
@@ -46,6 +47,14 @@ function Login() {
 
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
+
+    if(inputValidation){
+      await signIn("credentials", {
+        correo: usuario,
+        password: contraseña,
+        redirect: false,
+      });
+    }
   };
 
   return (
