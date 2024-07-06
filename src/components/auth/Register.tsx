@@ -119,8 +119,7 @@ function Register() {
     experiencia: string
   ) {
     crearContraseña();
-    var hash = bcrypt.hash(contrasena, 10);
-    console.log(hash);
+    var hash = bcrypt.hash("1234", 10);
     const res = await fetch("/api/masajista", {
       method: "POST",
       headers: {
@@ -137,6 +136,7 @@ function Register() {
       }),
     });
     const data = await res.json();
+    console.log(data);
     return data;
   }
 
@@ -256,10 +256,17 @@ function Register() {
     if (
       nombre !== "" &&
       cedula !== "" &&
+      cedula.length === 10 &&
       correoElectronico !== "" &&
+      emailIsValid(correoElectronico) === true &&
       genero !== "" &&
       edad !== "" &&
+      parseInt(edad) > 17 &&
+      parseInt(edad) < 81 &&
       experiencia !== "" &&
+      parseInt(experiencia) > 0 &&
+      parseInt(experiencia) < 50 &&
+      parseInt(experiencia) < parseInt(edad) - 15 &&
       rol !== "" &&
       nacionalidad !== ""
     ) {
@@ -278,49 +285,81 @@ function Register() {
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
     if (inputValidation) {
-      try {
-        if (rol === "1") {
-          await crearCiclista(
-            nombre,
-            cedula,
-            correoElectronico,
-            genero,
-            edad,
-            experiencia,
-            especialidad,
-            contextura,
-            nacionalidad
-          );
-        } else if (rol === "2") {
-          await crearMasajista(
-            nombre,
-            cedula,
-            correoElectronico,
-            genero,
-            edad,
-            experiencia
-          );
-        } else if (rol === "3") {
-          await crearDirector(
-            nombre,
-            cedula,
-            correoElectronico,
-            genero,
-            edad,
-            nacionalidad
-          );
-        }
-
-        successAlert(
-          "Usuario registrado",
-          "Se enviará al correo la información de acceso"
+      if (rol === "1") {
+        const dataCiclista = await crearCiclista(
+          nombre,
+          cedula,
+          correoElectronico,
+          genero,
+          edad,
+          experiencia,
+          especialidad,
+          contextura,
+          nacionalidad
         );
-        await enviarEmail(correoElectronico, contrasena);
-        router.push("/");
-      } catch (error: any) {
-        errorAlert("Error al registrar usuario", error.message);
-        return;
+        if (
+          dataCiclista === "El correo ya está registrado" ||
+          dataCiclista === "La cédula ya está registrada"
+        ) {
+          errorAlert("Error al registrar usuario", dataCiclista);
+          return;
+        } else {
+          successAlert(
+            "Usuario registrado",
+            "Se enviará al correo la información de acceso"
+          );
+          await enviarEmail(correoElectronico, contrasena);
+          router.push("/");
+        }
+      } else if (rol === "2") {
+        const dataMasajista = await crearMasajista(
+          nombre,
+          cedula,
+          correoElectronico,
+          genero,
+          edad,
+          experiencia
+        );
+        if (
+          dataMasajista === "El correo ya está registrado" ||
+          dataMasajista === "La cédula ya está registrada"
+        ) {
+          errorAlert("Error al registrar usuario", dataMasajista);
+          return;
+        } else {
+          successAlert(
+            "Usuario registrado",
+            "Se enviará al correo la información de acceso"
+          );
+          await enviarEmail(correoElectronico, contrasena);
+          router.push("/");
+        }
+      } else if (rol === "3") {
+        const dataDirector = await crearDirector(
+          nombre,
+          cedula,
+          correoElectronico,
+          genero,
+          edad,
+          nacionalidad
+        );
+        if (
+          dataDirector === "El correo ya está registrado" ||
+          dataDirector === "La cédula ya está registrada"
+        ) {
+          errorAlert("Error al registrar usuario", dataDirector);
+          return;
+        } else {
+          successAlert(
+            "Usuario registrado",
+            "Se enviará al correo la información de acceso"
+          );
+          await enviarEmail(correoElectronico, contrasena);
+          router.push("/");
+        }
       }
+
+      
     }
   };
 

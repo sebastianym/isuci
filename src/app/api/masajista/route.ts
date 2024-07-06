@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
-import { errorAlert } from "@/libs/functions/popUpAlert";
 
 interface Params {
   params: { id: string };
@@ -94,7 +93,9 @@ export async function POST(request: Request, { params }: Params) {
     return NextResponse.json(nuevoCiclista);
   } catch (error) {
     if (error instanceof Error) {
-      return error
+      return NextResponse.json(error.message, {
+        status: 500,
+      });
     }
   }
 }

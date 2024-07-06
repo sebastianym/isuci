@@ -5,6 +5,7 @@ import { successAlert } from "@/libs/functions/popUpAlert";
 
 function RegisterTeam() {
   const [nombreEscuadra, setNombreEscuadra] = useState("");
+  const [ciclistas, setCiclistas] = useState([]);
   const [paises, setPaises] = useState([]);
   const [paisOrigen, setPaisOrigen] = useState("");
   const [loadingPaises, setLoadingPaises] = useState(true);
@@ -13,19 +14,19 @@ function RegisterTeam() {
     paisOrigenInput: "",
   });
 
-  useEffect(() => {
-    const fetchPaises = async () => {
-      try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        const data = await response.json();
-        setPaises(data);
-      } catch (error) {
-        console.error("Error al obtener los países", error);
-      } finally {
-        setLoadingPaises(false);
-      }
-    };
+  const fetchPaises = async () => {
+    try {
+      const response = await fetch("https://restcountries.com/v3.1/all");
+      const data = await response.json();
+      setPaises(data);
+    } catch (error) {
+      console.error("Error al obtener los países", error);
+    } finally {
+      setLoadingPaises(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPaises();
   }, []);
 
@@ -62,8 +63,11 @@ function RegisterTeam() {
 
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
-    if(inputValidation){
-      successAlert("Escuadra registrada", "La escuadra ha sido registrada con éxito");
+    if (inputValidation) {
+      successAlert(
+        "Escuadra registrada",
+        "La escuadra ha sido registrada con éxito"
+      );
     }
   };
 
@@ -109,6 +113,33 @@ function RegisterTeam() {
                   />
                 ) : null
               )}
+            </p>
+          </label>
+          {loadingPaises ? (
+            <p className="text-white/80 font-medium">Cargando países...</p>
+          ) : (
+            <select
+              onChange={handlePaisOrigenChange}
+              className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+            >
+              <option disabled selected>
+                -- Selecciona un país --
+              </option>
+              {paises.map((pais) =>
+                typeof pais !== "object" || pais === null ? null : (
+                  <option key={pais.cca2} value={pais.name.common}>
+                    {pais.name.common}
+                  </option>
+                )
+              )}
+            </select>
+          )}
+          <label>
+            <p className="text-white/80 font-medium">
+              Selecciona los ciclistas
+              <span className="text-red-500 font-medium text-sm select-none">
+                {infoFormulario.paisOrigenInput}
+              </span>
             </p>
           </label>
           {loadingPaises ? (

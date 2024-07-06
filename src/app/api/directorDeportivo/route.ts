@@ -80,7 +80,7 @@ export async function POST(request: Request, { params }: Params) {
     if (ciclistaCedula || masajistaCedula || directorDeportivoCedula)
       throw new Error("La cédula ya está registrada");
 
-    const nuevoCiclista = await prisma.directorDeportivo.create({
+    const nuevoDirector = await prisma.directorDeportivo.create({
       data: {
         nombre,
         cedula,
@@ -91,11 +91,12 @@ export async function POST(request: Request, { params }: Params) {
         nacionalidad,
       },
     });
-    return NextResponse.json(nuevoCiclista);
+    return NextResponse.json(nuevoDirector);
   } catch (error) {
     if (error instanceof Error) {
-      console.log(error.stack);
-      return ;
+      return NextResponse.json(error.message, {
+        status: 500,
+      });
     }
   }
 }

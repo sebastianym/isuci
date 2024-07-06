@@ -1,19 +1,17 @@
 import nodemailer from "nodemailer";
-import { NextResponse } from "next/server";
-interface Params {
-  params: { id: string };
-}
 
-export async function POST(request: Request, { params }: Params) {
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
   try {
     const { correoElectronico, contrasena } = await request.json();
     const transport = nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
-      secure: false,
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: "0ec85897278dad",
-        pass: "bace844b4c63f8",
+        user: "traqueteroandino@gmail.com",
+        pass: "sgaa vdvz zwpk zcal",
       },
     });
 

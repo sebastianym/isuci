@@ -58,6 +58,11 @@ enum Contextura {
   MEDIA
 }
 
+enum Habilitada {
+  SI
+  NO
+}
+
 model Ciclista {
   id                     Int           @id @default(autoincrement())
   nombre                 String
@@ -113,7 +118,7 @@ model Escuadra {
   nombre          String
   paisOrigen      String
   tiempoAcumulado Int
-
+  habilitada      Habilitada
   // Relaciones
   ciclistas         Ciclista[]
   masajista         Masajista?
