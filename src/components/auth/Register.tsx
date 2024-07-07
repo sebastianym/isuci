@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import bcrypt from "bcryptjs";
+import { Pais } from "@/interfaces/Paises";
 import { ChangeEvent, useState, useEffect } from "react";
 import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
 import { useRouter } from "next/navigation";
@@ -17,7 +18,7 @@ function Register() {
   const [rol, setRol] = useState("");
   const [especialidad, setEspecialidad] = useState("");
   const [contextura, setContextura] = useState("");
-  const [paises, setPaises] = useState([]);
+  const [paises, setPaises] = useState<Pais[]>([]);
   const [nacionalidad, setNacionalidad] = useState("");
   const [loadingPaises, setLoadingPaises] = useState(true);
   const [infoFormulario, setInfoFormulario] = useState({
@@ -119,7 +120,8 @@ function Register() {
     experiencia: string
   ) {
     crearContraseña();
-    var hash = bcrypt.hash("1234", 10);
+    var hash = await bcrypt.hash("1234", 10);
+    console.log(hash);
     const res = await fetch("/api/masajista", {
       method: "POST",
       headers: {
@@ -155,19 +157,19 @@ function Register() {
     return data;
   }
 
-  useEffect(() => {
-    const fetchPaises = async () => {
-      try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        const data = await response.json();
-        setPaises(data);
-      } catch (error) {
-        console.error("Error al obtener los países", error);
-      } finally {
-        setLoadingPaises(false);
-      }
-    };
+  const fetchPaises = async () => {
+    try {
+      const response = await fetch("https://restcountries.com/v3.1/all");
+      const data = await response.json();
+      setPaises(data);
+    } catch (error) {
+      console.error("Error al obtener los países", error);
+    } finally {
+      setLoadingPaises(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPaises();
   }, []);
 
@@ -331,7 +333,9 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          await enviarEmail(correoElectronico, contrasena);
+          const dataEmail = await enviarEmail(correoElectronico, contrasena);
+          console.log(dataMasajista);
+          console.log(dataEmail);
           router.push("/");
         }
       } else if (rol === "3") {
@@ -358,8 +362,6 @@ function Register() {
           router.push("/");
         }
       }
-
-      
     }
   };
 
@@ -498,7 +500,7 @@ function Register() {
                     pais.name.common === nacionalidad ? (
                       <img
                         key={pais.cca2}
-                        src={pais.flags?.svg || ""}
+                        src={pais.flags.svg}
                         alt={pais.name.common}
                         className="inline-block w-6 h-4 ml-2"
                       />
@@ -562,7 +564,7 @@ function Register() {
                     <option disabled selected>
                       -- Selecciona tu especialidad --
                     </option>
-                    <option value="ESCALADOR">Escalador</option>
+                    <option value="ESCALADORES">Escalador</option>
                     <option value="RODADORES">Rodadores</option>
                     <option value="SPRINTERS">Sprinters</option>
                     <option value="GREGARIOS">Gregarios</option>

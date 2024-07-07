@@ -1,17 +1,33 @@
 "use client";
 
 import { ChangeEvent, useState, useEffect } from "react";
+import { Pais } from "@/interfaces/Paises";
+import { TypeCiclista } from "@/interfaces/Ciclista";
+import { TypeMasajista } from "@/interfaces/Masajista";
+import CardSelect from "@/components/cards/CardSelect";
+import CardDelete from "@/components/cards/CardDelete";
 import { successAlert } from "@/libs/functions/popUpAlert";
 
 function RegisterTeam() {
   const [nombreEscuadra, setNombreEscuadra] = useState("");
-  const [ciclistas, setCiclistas] = useState([]);
-  const [paises, setPaises] = useState([]);
+  const [ciclistas, setCiclistas] = useState<TypeCiclista[]>([]);
+  const [masajistas, setMasajistas] = useState<TypeMasajista[]>([]);
+  const [masajistaSeleccionado, setMasajistaSeleccionado] =
+    useState<TypeMasajista | null>(null);
+  const [directorDeportivo, setDirectorDeportivo] = useState<TypeMasajista[]>(
+    []
+  );
+  const [ciclistasSeleccionados, setCiclistasSeleccionados] = useState<
+    TypeCiclista[]
+  >([]);
+  const [paises, setPaises] = useState<Pais[]>([]);
   const [paisOrigen, setPaisOrigen] = useState("");
   const [loadingPaises, setLoadingPaises] = useState(true);
   const [infoFormulario, setInfoFormulario] = useState({
     nombreEscuadraInput: "",
     paisOrigenInput: "",
+    ciclistaInput: "",
+    especialidadCiclistaInput: "",
   });
 
   const fetchPaises = async () => {
@@ -26,8 +42,56 @@ function RegisterTeam() {
     }
   };
 
+  async function loadCiclistas() {
+    try {
+      const res = await fetch("/api/ciclista");
+      const data = await res.json();
+      console.log(data);
+      setCiclistas(data);
+    } catch (error) {
+      console.error("Error al obtener los ciclistas", error);
+    }
+  }
+
+  async function loadMasajistas() {
+    try {
+      const res = await fetch("/api/masajista");
+      const data = await res.json();
+      console.log(data);
+      setMasajistas(data);
+    } catch (error) {
+      console.error("Error al obtener los masajistas", error);
+    }
+  }
+
+  async function crearEscuadra(
+    nombre: string,
+    paisOrigen: string,
+    ciclistas: TypeCiclista[]
+  ) {
+    const res = await fetch("/api/escuadra", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nombre,
+        paisOrigen,
+        ciclistasSeleccionados,
+        masajistaSeleccionado,
+        directorDeportivo,
+      }),
+    });
+    const data = await res.json();
+    return data;
+  }
+
   useEffect(() => {
     fetchPaises();
+    loadCiclistas();
+    loadMasajistas();
+    console.log(ciclistas);
+    console.log(masajistas);
   }, []);
 
   const handleNombreEscuadraChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +100,24 @@ function RegisterTeam() {
 
   const handlePaisOrigenChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setPaisOrigen(event.target.value);
+  };
+
+  const checkCiclistasSeleccionados = () => {
+    const tiposCiclistas = [
+      "ESCALADORES",
+      "RODADORES",
+      "SPRINTERS",
+      "GREGARIOS",
+      "CLASICOMANOS",
+      "CONTRARRELOJISTA",
+    ];
+    const ciclistasSeleccionadosTipos = ciclistasSeleccionados.map(
+      (ciclista) => ciclista.especialidad
+    );
+    const tiposFaltantes = tiposCiclistas.filter(
+      (tipo) => !ciclistasSeleccionadosTipos.includes(tipo)
+    );
+    return tiposFaltantes.length === 0;
   };
 
   const checkInfoForm = () => {
@@ -47,8 +129,20 @@ function RegisterTeam() {
     paisOrigen === ""
       ? (updatedInfoForm.paisOrigenInput = " - Campo obligatorio")
       : (updatedInfoForm.paisOrigenInput = "");
+    ciclistasSeleccionados.length < 6
+      ? (updatedInfoForm.ciclistaInput = " - Los ciclistas no son suficientes")
+      : (updatedInfoForm.ciclistaInput = "");
+    checkCiclistasSeleccionados() === false
+      ? (updatedInfoForm.especialidadCiclistaInput =
+          " - No hay suficientes ciclistas de cada especialidad")
+      : (updatedInfoForm.ciclistaInput = "");
     setInfoFormulario(updatedInfoForm);
-    if (nombreEscuadra !== "" && paisOrigen !== "") {
+    if (
+      nombreEscuadra !== "" &&
+      paisOrigen !== "" &&
+      ciclistasSeleccionados.length >= 6 &&
+      checkCiclistasSeleccionados() === true
+    ) {
       return true;
     } else {
       return false;
@@ -64,6 +158,11 @@ function RegisterTeam() {
   const handleLogin = async () => {
     const inputValidation = checkInfoForm();
     if (inputValidation) {
+      const dataEscuadra = await crearEscuadra(
+        nombreEscuadra,
+        paisOrigen,
+        ciclistasSeleccionados
+      );
       successAlert(
         "Escuadra registrada",
         "La escuadra ha sido registrada con éxito"
@@ -136,31 +235,102 @@ function RegisterTeam() {
           )}
           <label>
             <p className="text-white/80 font-medium">
-              Selecciona los ciclistas
+              Ciclistas seleccionados
               <span className="text-red-500 font-medium text-sm select-none">
-                {infoFormulario.paisOrigenInput}
+                {infoFormulario.ciclistaInput}
+              </span>
+              <span className="text-red-500 font-medium text-sm select-none">
+                {infoFormulario.especialidadCiclistaInput}
               </span>
             </p>
           </label>
-          {loadingPaises ? (
-            <p className="text-white/80 font-medium">Cargando países...</p>
-          ) : (
-            <select
-              onChange={handlePaisOrigenChange}
-              className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
-            >
-              <option disabled selected>
-                -- Selecciona un país --
-              </option>
-              {paises.map((pais) =>
-                typeof pais !== "object" || pais === null ? null : (
-                  <option key={pais.cca2} value={pais.name.common}>
-                    {pais.name.common}
-                  </option>
-                )
-              )}
-            </select>
-          )}
+          {
+            <div className="w-full">
+              {ciclistasSeleccionados.map((ciclistaSeleccionado) => (
+                <CardDelete
+                  key={ciclistaSeleccionado.id}
+                  nombre={ciclistaSeleccionado.nombre}
+                  especialidad={ciclistaSeleccionado.especialidad}
+                  cedula={ciclistaSeleccionado.cedula}
+                  onDelete={() => {
+                    setCiclistas([...ciclistas, ciclistaSeleccionado]);
+                    setCiclistasSeleccionados(
+                      ciclistasSeleccionados.filter(
+                        (c) => c.id !== ciclistaSeleccionado.id
+                      )
+                    );
+                  }}
+                />
+              ))}
+            </div>
+          }
+          <label>
+            <p className="text-white/80 font-medium">
+              Masajista seleccionado
+              <span className="text-red-500 font-medium text-sm select-none">
+                {infoFormulario.ciclistaInput}
+              </span>
+            </p>
+          </label>
+          {
+            <div className="w-full">
+              {masajistaSeleccionado ? (
+                <CardDelete
+                  key={masajistaSeleccionado.id}
+                  nombre={masajistaSeleccionado.nombre}
+                  especialidad={"Masajista"}
+                  cedula={masajistaSeleccionado.cedula}
+                  onDelete={() => {
+                    setMasajistas([...masajistas, masajistaSeleccionado]);
+                    setMasajistaSeleccionado(null);
+                  }}
+                />
+              ) : null}
+            </div>
+          }
+          <label>
+            <p className="text-white/80 font-medium">Ciclistas disponibles</p>
+          </label>
+          <div className="w-full">
+            {ciclistas
+              .filter((ciclista) => ciclista.escuadraId === null)
+              .map((ciclista) => (
+                <CardSelect
+                  key={ciclista.id}
+                  nombre={ciclista.nombre}
+                  especialidad={ciclista.especialidad}
+                  cedula={ciclista.cedula}
+                  onAdd={() => {
+                    setCiclistasSeleccionados([
+                      ...ciclistasSeleccionados,
+                      ciclista,
+                    ]);
+                    setCiclistas(ciclistas.filter((c) => c.id !== ciclista.id));
+                  }}
+                />
+              ))}
+          </div>
+          <label>
+            <p className="text-white/80 font-medium">Masajistas disponibles</p>
+          </label>
+          <div className="w-full">
+            {masajistas
+              .filter((masajista) => masajista.escuadraId === null)
+              .map((masajista) => (
+                <CardSelect
+                  key={masajista.id}
+                  nombre={masajista.nombre}
+                  especialidad={"Masajista"}
+                  cedula={masajista.cedula}
+                  onAdd={() => {
+                    setMasajistaSeleccionado(masajista);
+                    setMasajistas(
+                      masajistas.filter((c) => c.id !== masajista.id)
+                    );
+                  }}
+                />
+              ))}
+          </div>
           <button
             className="w-full bg-bg-green-secondary hover:bg-[#3C5B6F] transition-all h-10 rounded-md text-white font-medium mb-3"
             type="button"

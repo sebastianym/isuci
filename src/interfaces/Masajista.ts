@@ -1,4 +1,4 @@
-export interface TypeCiclista {
+export interface TypeMasajista {
   id: number;
   nombre: string;
   cedula: string;
@@ -6,9 +6,5 @@ export interface TypeCiclista {
   genero: string;
   edad: number;
   experiencia: number;
-  nacionalidad: string;
-  tiempoAcumuado: number;
-  especialidad: string;
-  contextura: string;
   escuadraId: number | null;
 }

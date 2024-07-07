@@ -5,7 +5,6 @@ import { ChangeEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import { errorAlert } from "@/libs/functions/popUpAlert";
 import { useRouter } from "next/navigation";
-import bcrypt from "bcryptjs";
 
 function Login() {
   const [correo, setCorreo] = useState("");

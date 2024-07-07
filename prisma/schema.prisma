@@ -118,7 +118,7 @@ model Escuadra {
   nombre          String
   paisOrigen      String
   tiempoAcumulado Int
-  habilitada      Habilitada
+  habilitada      Habilitada 
   // Relaciones
   ciclistas         Ciclista[]
   masajista         Masajista?

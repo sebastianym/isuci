@@ -5,6 +5,7 @@ import { FaUsers } from "react-icons/fa";
 import { IoBicycle } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { GiMountainRoad } from "react-icons/gi";
+import { FiUsers } from "react-icons/fi";
 
 interface DashboardProps {
   children: ReactNode;
@@ -51,6 +52,14 @@ function Dashboard({ children }: DashboardProps) {
                 </p>
               </div>
             </div>
+            <div className="hover:bg-blue-700 py-6">
+              <div className="flex items-center pl-8">
+                <FiUsers size={"30px"} />
+                <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
+                  Administrar usuarios
+                </p>
+              </div>
+            </div>
           </nav>
         </div>
       </div>
@@ -62,9 +71,7 @@ function Dashboard({ children }: DashboardProps) {
             </p>
           </div>
         </header>
-        <main className="w-full h-full bg-bg-dark-secondary">
-          {children}
-        </main>
+        <main className="w-full h-full bg-bg-dark-secondary">{children}</main>
       </div>
     </div>
   );
