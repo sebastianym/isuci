@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import AdminUsers from "@/components/panel/AdminUsers";
+import AdminCiclistas from "@/components/panel/AdminCiclistas";
 import Dashboard from "@/components/panel/Dashboard";
-function AdministrarUsuarios() {
+function AdministrarCiclistas() {
   return (
     <Dashboard>
-      <AdminUsers />
+      <AdminCiclistas />
     </Dashboard>
   );
 }
 
-export default AdministrarUsuarios;
+export default AdministrarCiclistas;

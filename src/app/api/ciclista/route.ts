@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
-import { errorAlert } from "@/libs/functions/popUpAlert";
 interface Params {
   params: { id: string };
 }

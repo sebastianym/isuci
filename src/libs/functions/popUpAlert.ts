@@ -41,13 +41,9 @@ export const warningAlert = (title: string, message: string) => {
 
 export const confirmAlert = async (
   title: string,
-  message: string,
-  titleExito: string,
-  messageExito: string,
-  titleError: string,
-  messageError: string
+  message: string
 ) => {
-  return new Promise<boolean>((resolve, reject) => {
+  return new Promise<boolean>((resolve) => {
     Swal.fire({
       title: title,
       text: message,
@@ -63,14 +59,11 @@ export const confirmAlert = async (
       cancelButtonColor: "#e53e3e",
     }).then((result) => {
       if (result.isConfirmed) {
-        successAlert(titleExito, messageExito);
         resolve(true);
-      } else if (result.isDenied) {
-        errorAlert(titleError, messageError);
-        resolve(false);
       } else {
         resolve(false);
       }
     });
   });
 };
+

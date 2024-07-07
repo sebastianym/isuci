@@ -142,20 +142,20 @@ function Register() {
     return data;
   }
 
-  async function enviarEmail(correoElectronico: string, contrasena: string) {
-    const res = await fetch("/api/email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        correoElectronico,
-        contrasena,
-      }),
-    });
-    const data = await res.json();
-    return data;
-  }
+  // async function enviarEmail(correoElectronico: string, contrasena: string) {
+  //   const res = await fetch("/api/email", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       correoElectronico,
+  //       contrasena,
+  //     }),
+  //   });
+  //   const data = await res.json();
+  //   return data;
+  // }
 
   const fetchPaises = async () => {
     try {
@@ -310,7 +310,7 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          await enviarEmail(correoElectronico, contrasena);
+          //await enviarEmail(correoElectronico, contrasena);
           router.push("/");
         }
       } else if (rol === "2") {
@@ -333,9 +333,9 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          const dataEmail = await enviarEmail(correoElectronico, contrasena);
+          // const dataEmail = await enviarEmail(correoElectronico, contrasena);
           console.log(dataMasajista);
-          console.log(dataEmail);
+          // console.log(dataEmail);
           router.push("/");
         }
       } else if (rol === "3") {
@@ -358,7 +358,7 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          await enviarEmail(correoElectronico, contrasena);
+          // await enviarEmail(correoElectronico, contrasena);
           router.push("/");
         }
       }

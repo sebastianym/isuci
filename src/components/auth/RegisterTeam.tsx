@@ -6,7 +6,9 @@ import { TypeCiclista } from "@/interfaces/Ciclista";
 import { TypeMasajista } from "@/interfaces/Masajista";
 import CardSelect from "@/components/cards/CardSelect";
 import CardDelete from "@/components/cards/CardDelete";
-import { successAlert } from "@/libs/functions/popUpAlert";
+import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
+import { TbMassage } from "react-icons/tb";
+import { IoBicycle } from "react-icons/io5";
 
 function RegisterTeam() {
   const [nombreEscuadra, setNombreEscuadra] = useState("");
@@ -28,6 +30,8 @@ function RegisterTeam() {
     paisOrigenInput: "",
     ciclistaInput: "",
     especialidadCiclistaInput: "",
+    masajistaInput: "",
+    masajistaUniqueInput: "",
   });
 
   const fetchPaises = async () => {
@@ -67,7 +71,8 @@ function RegisterTeam() {
   async function crearEscuadra(
     nombre: string,
     paisOrigen: string,
-    ciclistas: TypeCiclista[]
+    ciclistasSeleccionados: TypeCiclista[],
+    masajistaSeleccionado: TypeMasajista | null
   ) {
     const res = await fetch("/api/escuadra", {
       method: "POST",
@@ -135,13 +140,17 @@ function RegisterTeam() {
     checkCiclistasSeleccionados() === false
       ? (updatedInfoForm.especialidadCiclistaInput =
           " - No hay suficientes ciclistas de cada especialidad")
-      : (updatedInfoForm.ciclistaInput = "");
+      : (updatedInfoForm.especialidadCiclistaInput = "");
+    masajistaSeleccionado === null
+      ? (updatedInfoForm.masajistaInput = " - Se debe seleccionar un masajista")
+      : (updatedInfoForm.masajistaInput = "");
     setInfoFormulario(updatedInfoForm);
     if (
       nombreEscuadra !== "" &&
       paisOrigen !== "" &&
       ciclistasSeleccionados.length >= 6 &&
-      checkCiclistasSeleccionados() === true
+      checkCiclistasSeleccionados() === true &&
+      masajistaSeleccionado !== null
     ) {
       return true;
     } else {
@@ -161,8 +170,13 @@ function RegisterTeam() {
       const dataEscuadra = await crearEscuadra(
         nombreEscuadra,
         paisOrigen,
-        ciclistasSeleccionados
+        ciclistasSeleccionados,
+        masajistaSeleccionado
       );
+      if (dataEscuadra === "El nombre de la escuadra ya existe") {
+        errorAlert("Error al registrar la escuadra", dataEscuadra);
+        return;
+      }
       successAlert(
         "Escuadra registrada",
         "La escuadra ha sido registrada con éxito"
@@ -171,7 +185,7 @@ function RegisterTeam() {
   };
 
   return (
-    <div className="md:p-20 max-md:py-10  flex justify-center items-center">
+    <div className="py-2 flex justify-center items-center m-3">
       <div className="w-full max-xl:w-full container">
         <div>
           <h1 className="text-3xl font-semibold xl:mb-2 mb-4 w-full py-1 text-white">
@@ -219,7 +233,7 @@ function RegisterTeam() {
           ) : (
             <select
               onChange={handlePaisOrigenChange}
-              className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+              className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
             >
               <option disabled selected>
                 -- Selecciona un país --
@@ -245,13 +259,14 @@ function RegisterTeam() {
             </p>
           </label>
           {
-            <div className="w-full">
+            <div className="w-full max-h-60 overflow-y-auto mb-2 scrollbar-hide">
               {ciclistasSeleccionados.map((ciclistaSeleccionado) => (
                 <CardDelete
                   key={ciclistaSeleccionado.id}
                   nombre={ciclistaSeleccionado.nombre}
                   especialidad={ciclistaSeleccionado.especialidad}
                   cedula={ciclistaSeleccionado.cedula}
+                  icon={<IoBicycle size="30px" style={{ color: "white" }} />}
                   onDelete={() => {
                     setCiclistas([...ciclistas, ciclistaSeleccionado]);
                     setCiclistasSeleccionados(
@@ -268,7 +283,7 @@ function RegisterTeam() {
             <p className="text-white/80 font-medium">
               Masajista seleccionado
               <span className="text-red-500 font-medium text-sm select-none">
-                {infoFormulario.ciclistaInput}
+                {infoFormulario.masajistaInput}
               </span>
             </p>
           </label>
@@ -280,6 +295,7 @@ function RegisterTeam() {
                   nombre={masajistaSeleccionado.nombre}
                   especialidad={"Masajista"}
                   cedula={masajistaSeleccionado.cedula}
+                  icon={<TbMassage size="30px" style={{ color: "white" }} />}
                   onDelete={() => {
                     setMasajistas([...masajistas, masajistaSeleccionado]);
                     setMasajistaSeleccionado(null);
@@ -291,7 +307,7 @@ function RegisterTeam() {
           <label>
             <p className="text-white/80 font-medium">Ciclistas disponibles</p>
           </label>
-          <div className="w-full">
+          <div className="w-full max-h-60 overflow-y-auto mb-2 scrollbar-hide">
             {ciclistas
               .filter((ciclista) => ciclista.escuadraId === null)
               .map((ciclista) => (
@@ -300,6 +316,7 @@ function RegisterTeam() {
                   nombre={ciclista.nombre}
                   especialidad={ciclista.especialidad}
                   cedula={ciclista.cedula}
+                  icon={<IoBicycle size="30px" style={{ color: "white" }} />}
                   onAdd={() => {
                     setCiclistasSeleccionados([
                       ...ciclistasSeleccionados,
@@ -310,27 +327,36 @@ function RegisterTeam() {
                 />
               ))}
           </div>
-          <label>
-            <p className="text-white/80 font-medium">Masajistas disponibles</p>
-          </label>
-          <div className="w-full">
-            {masajistas
-              .filter((masajista) => masajista.escuadraId === null)
-              .map((masajista) => (
-                <CardSelect
-                  key={masajista.id}
-                  nombre={masajista.nombre}
-                  especialidad={"Masajista"}
-                  cedula={masajista.cedula}
-                  onAdd={() => {
-                    setMasajistaSeleccionado(masajista);
-                    setMasajistas(
-                      masajistas.filter((c) => c.id !== masajista.id)
-                    );
-                  }}
-                />
-              ))}
-          </div>
+          {masajistaSeleccionado === null ? (
+            <div>
+              <label>
+                <p className="text-white/80 font-medium">
+                  Masajistas disponibles
+                </p>
+              </label>
+              <div className="w-full max-h-60 overflow-y-auto mb-2 scrollbar-hide">
+                {masajistas
+                  .filter((masajista) => masajista.escuadraId === null)
+                  .map((masajista) => (
+                    <CardSelect
+                      key={masajista.id}
+                      nombre={masajista.nombre}
+                      especialidad={"Masajista"}
+                      cedula={masajista.cedula}
+                      icon={
+                        <TbMassage size="30px" style={{ color: "white" }} />
+                      }
+                      onAdd={() => {
+                        setMasajistaSeleccionado(masajista);
+                        setMasajistas(
+                          masajistas.filter((c) => c.id !== masajista.id)
+                        );
+                      }}
+                    />
+                  ))}
+              </div>
+            </div>
+          ) : null}
           <button
             className="w-full bg-bg-green-secondary hover:bg-[#3C5B6F] transition-all h-10 rounded-md text-white font-medium mb-3"
             type="button"

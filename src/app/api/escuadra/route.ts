@@ -29,10 +29,18 @@ export async function GET(request: Request) {
 // Crear una escuadra
 export async function POST(request: Request) {
   try {
-    const { nombre, paisOrigen, ciclistas } = await request.json();
+    const { nombre, paisOrigen, ciclistasSeleccionados, masajistaSeleccionado } = await request.json();
+
+    const escuadraExistente = await prisma.escuadra.findFirst({
+      where: {
+        nombre,
+      },
+    });
+
+    if (escuadraExistente) throw new Error("El nombre de la escuadra ya existe");
 
     // Calcular el tiempo acumulado de los ciclistas
-    const tiempoAcumulado = ciclistas.reduce(
+    const tiempoAcumulado = ciclistasSeleccionados.reduce(
       (acc: number, ciclista: { tiempoAcumuladoCarrera: number }) => {
         return acc + (ciclista.tiempoAcumuladoCarrera || 0);
       },
@@ -46,9 +54,14 @@ export async function POST(request: Request) {
         tiempoAcumulado,
         habilitada: "SI",
         ciclistas: {
-          connect: ciclistas.map((ciclista: { id: number }) => ({
+          connect: ciclistasSeleccionados.map((ciclista: { id: number }) => ({
             id: ciclista.id,
           })),
+        },
+        masajista: {
+          connect: {
+            id: masajistaSeleccionado.id,
+          },
         },
       },
     });
@@ -56,14 +69,9 @@ export async function POST(request: Request) {
     return NextResponse.json(nuevaEscuadra);
   } catch (error) {
     if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          message: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
+      return NextResponse.json(error.message, {
+        status: 500,
+      });
     }
   }
 }
