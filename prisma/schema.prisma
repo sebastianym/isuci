@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+enum Rol {
+  CICLISTA
+  MASAJISTA
+  DIRECTOR_DEPORTIVO
+  ADMIN
+}
+
+enum Especialidad {
+  ESCALADORES
+  RODADORES
+  SPRINTERS
+  GREGARIOS
+  CLASICOMANOS
+  CONTRARRELOJISTA
+}
+
+enum TipoEtapa {
+  MONTANA
+  LLANO_CON_CURVAS
+  SEMI_LLANO
+  UN_SOLO_DIA
+  LLANO_EN_RECTA
+}
+
+enum CiclistaAdecuado {
+  ESCALADORES
+  RODADORES
+  SPRINTERS
+  GREGARIOS
+  CLASICOMANOS
+  CONTRARRELOJISTA
+}
+
+enum Genero {
+  MASCULINO
+  FEMENINO
+}
+
+enum Contextura {
+  MUY_DELGADA
+  DELGADA
+  MEDIA
+}
+
+enum Habilitada {
+  SI
+  NO
+}
+
+model Ciclista {
+  id                     Int           @id @default(autoincrement())
+  nombre                 String
+  cedula                 String        @unique
+  correoElectronico      String        @unique
+  contrasena             String
+  genero                 Genero
+  edad                   Int
+  experiencia            Int
+  nacionalidad           String
+  tiempoAcumuladoCarrera Int?          @default(0)
+  especialidad           Especialidad?
+  contextura             Contextura?
+
+  // Relaciones
+  escuadraId      Int?
+  escuadra        Escuadra? @relation(fields: [escuadraId], references: [id])
+  carrerasGanadas Carrera[]
+}
+
+model Masajista {
+  id                Int    @id @default(autoincrement())
+  nombre            String
+  cedula            String @unique
+  correoElectronico String @unique
+  contrasena        String
+  genero            Genero
+  edad              Int
+  experiencia       Int
+
+  // Relaciones
+  escuadra   Escuadra? @relation(fields: [escuadraId], references: [id])
+  escuadraId Int?      @unique
+}
+
+model DirectorDeportivo {
+  id                Int    @id @default(autoincrement())
+  nombre            String
+  cedula            String @unique
+  correoElectronico String @unique
+  contrasena        String
+  genero            Genero
+  edad              Int
+  nacionalidad      String
+
+  // Relaciones
+  escuadra   Escuadra? @relation(fields: [escuadraId], references: [id])
+  escuadraId Int?      @unique
+}
+
+model Escuadra {
+  id              Int    @id @default(autoincrement())
+  nombre          String
+  paisOrigen      String
+  tiempoAcumulado Int
+  habilitada      Habilitada 
+  // Relaciones
+  ciclistas         Ciclista[]
+  masajista         Masajista?
+  directorDeportivo DirectorDeportivo?
+}
+
+model Carrera {
+  id               Int              @id @default(autoincrement())
+  tipoEtapa        TipoEtapa
+  ciclistaAdecuado CiclistaAdecuado
+  tiempoAcumulado  Int
+
+  // Relaciones
+  ganadorId Int?
+  ganador   Ciclista? @relation(fields: [ganadorId], references: [id])
+}
+
+model Administrador {
+  id                Int    @id @default(autoincrement())
+  correoElectronico String @unique
+  contrasena        String
+}
