@@ -56,10 +56,6 @@ function crearCarrera() {
     }
   };
 
-  rol === "CICLISTA" ? loadCiclista() : null;
-  rol === "DIRECTOR_DEPORTIVO" ? loadDirector() : null;
-  rol === "MASAJISTA" ? loadMasajista() : null;
-
   useEffect(() => {
     fetchSession();
   }, []);
