@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 // Crear una escuadra
 export async function POST(request: Request) {
   try {
-    const { nombre, paisOrigen, ciclistasSeleccionados, masajistaSeleccionado } = await request.json();
+    const { nombre, paisOrigen, ciclistasSeleccionados, masajistaSeleccionado, directorDeportivo } = await request.json();
 
     const escuadraExistente = await prisma.escuadra.findFirst({
       where: {
@@ -63,6 +63,11 @@ export async function POST(request: Request) {
             id: masajistaSeleccionado.id,
           },
         },
+        directorDeportivo: {
+          connect: {
+            id: directorDeportivo,
+          },
+        }
       },
     });
 

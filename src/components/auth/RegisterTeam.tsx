@@ -10,6 +10,7 @@ import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
 import { TbMassage } from "react-icons/tb";
 import { IoBicycle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
+import { getSession } from "next-auth/react";
 
 function RegisterTeam() {
   const [nombreEscuadra, setNombreEscuadra] = useState("");
@@ -17,12 +18,8 @@ function RegisterTeam() {
   const [masajistas, setMasajistas] = useState<TypeMasajista[]>([]);
   const [masajistaSeleccionado, setMasajistaSeleccionado] =
     useState<TypeMasajista | null>(null);
-  const [directorDeportivo, setDirectorDeportivo] = useState<TypeMasajista[]>(
-    []
-  );
-  const [ciclistasSeleccionados, setCiclistasSeleccionados] = useState<
-    TypeCiclista[]
-  >([]);
+  const [directorDeportivo, setDirectorDeportivo] = useState<number | null>(null);
+  const [ciclistasSeleccionados, setCiclistasSeleccionados] = useState<TypeCiclista[]>([]);
   const [paises, setPaises] = useState<Pais[]>([]);
   const [paisOrigen, setPaisOrigen] = useState("");
   const [loadingPaises, setLoadingPaises] = useState(true);
@@ -36,6 +33,13 @@ function RegisterTeam() {
   });
 
   const router = useRouter();
+
+  const fetchSession = async () => {
+    const session = await getSession();
+    if (session) {
+      setDirectorDeportivo(parseInt(session.user.id));
+    }
+  };
 
   const fetchPaises = async () => {
     try {
@@ -91,15 +95,15 @@ function RegisterTeam() {
       }),
     });
     const data = await res.json();
+    console.log(data);
     return data;
   }
 
   useEffect(() => {
+    fetchSession();
     fetchPaises();
     loadCiclistas();
     loadMasajistas();
-    console.log(ciclistas);
-    console.log(masajistas);
   }, []);
 
   const handleNombreEscuadraChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +188,6 @@ function RegisterTeam() {
         "Escuadra registrada",
         "La escuadra ha sido registrada con éxito"
       )
-      location.reload();
     }
   };
 

@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import React, { ReactNode } from "react";
 import { FaUsers, FaBicycle } from "react-icons/fa";
 import { IoBicycle } from "react-icons/io5";
@@ -19,6 +19,9 @@ interface DashboardProps {
 function Dashboard({ children }: DashboardProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [directorDeportivo, setDirectorDeportivo] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     if (status === "loading") return;
@@ -37,7 +40,6 @@ function Dashboard({ children }: DashboardProps) {
 
   const isAdmin = session.user.role === "ADMIN";
   const isDirectorDeportivo = session.user.role === "DIRECTOR_DEPORTIVO";
-
   return (
     <div className="flex h-screen shadow-xl">
       <div className="w-96 bg-white lg:flex flex-col hidden">
@@ -73,11 +75,26 @@ function Dashboard({ children }: DashboardProps) {
             >
               <div
                 className="flex items-center text-black/70 pl-8 "
+                onClick={() => router.push("/panel/crearEscuadra")}
+              >
+                <FaUsers size={"30px"} />
+                <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
+                  Crea tu escuadra
+                </p>
+              </div>
+            </div>
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isDirectorDeportivo ? "" : "hidden"
+              }`}
+            >
+              <div
+                className="flex items-center text-black/70 pl-8 "
                 onClick={() => router.push("/panel")}
               >
                 <FaUsers size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
-                  Crear tu escuadra
+                  Ver escuadra
                 </p>
               </div>
             </div>
