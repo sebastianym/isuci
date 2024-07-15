@@ -7,10 +7,8 @@ import { useRouter } from "next/navigation";
 function crearCarrera() {
   const [nombreCarrera, setNombreCarrera] = useState("");
   const [tipoEtapa, setTipoEtapa] = useState("");
-  const [pistaSeleccionada, setPistaSeleccionada] = useState("");
   const [infoFormulario, setInfoFormulario] = useState({
     nombreCarreraInput: "",
-    pistaSeleccionadaInput: "",
     tipoEtapaInput: "",
   });
 
@@ -23,6 +21,7 @@ function crearCarrera() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        nombre: nombreCarrera,
         tipoEtapa,
       }),
     });
@@ -48,11 +47,8 @@ function crearCarrera() {
     tipoEtapa === ""
       ? (updatedInfoForm.tipoEtapaInput = " - Campo obligatorio")
       : (updatedInfoForm.tipoEtapaInput = "");
-    pistaSeleccionada === ""
-      ? (updatedInfoForm.pistaSeleccionadaInput = " - Campo obligatorio")
-      : (updatedInfoForm.pistaSeleccionadaInput = "");
     setInfoFormulario(updatedInfoForm);
-    if (nombreCarrera !== "" && tipoEtapa !== "" && pistaSeleccionada !== "") {
+    if (nombreCarrera !== "" && tipoEtapa !== "") {
       return true;
     } else {
       return false;

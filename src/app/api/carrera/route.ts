@@ -28,13 +28,14 @@ export async function GET(request: Request, { params }: Params) {
 //Crear una carrera
 export async function POST(request: Request, { params }: Params) {
   try {
-    const { tipoEtapa } = await request.json();
+    const { nombre, tipoEtapa } = await request.json();
 
     const nuevaCarrera = await prisma.carrera.create({
       data: {
+        nombre,
         tipoEtapa,
-        ciclistaAdecuado: "CLASICOMANOS",
         tiempoAcumulado: 0,
+        disponible: "SI",
       },
     });
     return NextResponse.json(nuevaCarrera);

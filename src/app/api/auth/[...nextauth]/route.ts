@@ -1,9 +1,32 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/libs/prisma";
 import bcrypt from "bcryptjs";
 
-const authOptions = {
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+    };
+  }
+
+  interface User {
+    id: string;
+    role: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: string;
+  }
+}
+
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -11,61 +34,80 @@ const authOptions = {
         correo: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
+        if (!credentials) {
+          return null;
+        }
+
+        const { correo, password } = credentials;
+
+        const administrador = await prisma.administrador.findUnique({
+          where: {
+            correoElectronico: correo,
+          },
+        });
         const ciclista = await prisma.ciclista.findUnique({
           where: {
-            correoElectronico: credentials?.correo,
+            correoElectronico: correo,
           },
         });
         const masajista = await prisma.masajista.findUnique({
           where: {
-            correoElectronico: credentials?.correo,
+            correoElectronico: correo,
           },
         });
         const directorDeportivo = await prisma.directorDeportivo.findUnique({
           where: {
-            correoElectronico: credentials?.correo,
+            correoElectronico: correo,
           },
         });
 
-        if (!ciclista && !masajista && !directorDeportivo)
+        const usuario = administrador || ciclista || masajista || directorDeportivo;
+        if (!usuario) {
           throw new Error("No se encontró el usuario");
+        }
 
         const matchPassword = await bcrypt.compare(
-          credentials?.password || "",
-          ciclista?.contrasena ||
-            masajista?.contrasena ||
-            directorDeportivo?.contrasena ||
-            "1"
+          password,
+          usuario.contrasena
         );
 
-        if (!matchPassword) throw new Error("Contraseña incorrecta");
+        if (!matchPassword) {
+          throw new Error("Contraseña incorrecta");
+        }
 
-        return {
-          id: String(
-            ciclista?.id || masajista?.id || directorDeportivo?.id || 0
-          ),
-          name:
-            ciclista?.nombre ||
-            masajista?.nombre ||
-            directorDeportivo?.nombre ||
-            "",
-          email:
-            ciclista?.correoElectronico ||
-            masajista?.correoElectronico ||
-            directorDeportivo?.correoElectronico ||
-            "",
-          role: ciclista
-            ? "ciclista"
-            : masajista
-            ? "masajista"
-            : directorDeportivo
-            ? "directorDeportivo"
-            : "",
-        };
+        let role = "";
+        if(administrador) role = "ADMIN";
+        if (ciclista) role = "CICLISTA";
+        if (masajista) role = "MASAJISTA";
+        if (directorDeportivo) role = "DIRECTOR_DEPORTIVO";
+
+        return { id: usuario.id.toString(), role };
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/",
+  },
+  session: {
+    strategy: "jwt",
+  },
 };
 
 const handler = NextAuth(authOptions);

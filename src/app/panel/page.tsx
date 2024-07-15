@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import RegisterTeam from "@/components/auth/RegisterTeam";
+import Principal from "@/components/panel/Principal";
 import Dashboard from "@/components/panel/Dashboard";
 function Panel() {
   return (
     <Dashboard>
-      <RegisterTeam />
+      <Principal />
     </Dashboard>
   );
 }

@@ -2,16 +2,16 @@
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import React, { useState } from "react";
-import AdminCiclistas from "@/components/panel/AdminCiclistas";
+import CreateCarrera from "@/components/panel/inscribirseCarrera";
 import Dashboard from "@/components/panel/Dashboard";
-function AdministrarCiclistas() {
+function inscribirseCarrera() {
   return (
-    <ProtectedRoute allowedRoles={["ADMIN"]}>
+    <ProtectedRoute allowedRoles={["DIRECTOR_DEPORTIVO"]}>
       <Dashboard>
-        <AdminCiclistas />
+        <CreateCarrera />
       </Dashboard>
     </ProtectedRoute>
   );
 }
 
-export default AdministrarCiclistas;
+export default inscribirseCarrera;

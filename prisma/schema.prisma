@@ -114,30 +114,42 @@ model DirectorDeportivo {
 }
 
 model Escuadra {
-  id              Int    @id @default(autoincrement())
-  nombre          String
-  paisOrigen      String
-  tiempoAcumulado Int
-  habilitada      Habilitada 
+  id                Int                @id @default(autoincrement())
+  nombre            String
+  paisOrigen        String
+  tiempoAcumulado   Int
+  habilitada        Habilitada
   // Relaciones
   ciclistas         Ciclista[]
   masajista         Masajista?
   directorDeportivo DirectorDeportivo?
+  carreras          CarreraEscuadra[]
 }
 
 model Carrera {
-  id               Int              @id @default(autoincrement())
-  tipoEtapa        TipoEtapa
-  ciclistaAdecuado CiclistaAdecuado
-  tiempoAcumulado  Int
+  id              Int        @id @default(autoincrement())
+  nombre          String
+  disponible      Habilitada
+  tipoEtapa       TipoEtapa
+  tiempoAcumulado Int
 
   // Relaciones
   ganadorId Int?
-  ganador   Ciclista? @relation(fields: [ganadorId], references: [id])
+  ganador   Ciclista?         @relation(fields: [ganadorId], references: [id])
+  escuadras CarreraEscuadra[]
 }
 
 model Administrador {
   id                Int    @id @default(autoincrement())
   correoElectronico String @unique
   contrasena        String
+}
+
+model CarreraEscuadra {
+  carreraId  Int
+  escuadraId Int
+  carrera    Carrera  @relation(fields: [carreraId], references: [id])
+  escuadra   Escuadra @relation(fields: [escuadraId], references: [id])
+
+  @@id([carreraId, escuadraId])
 }

@@ -1,5 +1,7 @@
 "use client";
-
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { useEffect } from "react";
 import React, { ReactNode } from "react";
 import { FaUsers, FaBicycle } from "react-icons/fa";
 import { IoBicycle } from "react-icons/io5";
@@ -16,6 +18,25 @@ interface DashboardProps {
 
 function Dashboard({ children }: DashboardProps) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.replace("/");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading") {
+    return;
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  const isAdmin = session.user.role === "ADMIN";
+  const isDirectorDeportivo = session.user.role === "DIRECTOR_DEPORTIVO";
 
   return (
     <div className="flex h-screen shadow-xl">
@@ -33,7 +54,11 @@ function Dashboard({ children }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <div className="hover:bg-[#478CCF] py-6">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "" : "hidden"
+              }`}
+            >
               <div className="flex items-center text-black/70 pl-8">
                 <IoBicycle size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
@@ -41,9 +66,13 @@ function Dashboard({ children }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <div className="hover:bg-[#478CCF] py-6">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isDirectorDeportivo ? "" : "hidden"
+              }`}
+            >
               <div
-                className="flex items-center text-black/70 pl-8 hover:cursor-pointer"
+                className="flex items-center text-black/70 pl-8 "
                 onClick={() => router.push("/panel")}
               >
                 <FaUsers size={"30px"} />
@@ -52,17 +81,28 @@ function Dashboard({ children }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <div className="hover:bg-[#478CCF] py-6">
-              <div className="flex items-center text-black/70 pl-8">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "" : "hidden"
+              }`}
+            >
+              <div
+                className="flex items-center text-black/70 pl-8"
+                onClick={() => router.push("/panel/crearCarrera")}
+              >
                 <GiMountainRoad size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
                   Crear carrera
                 </p>
               </div>
             </div>
-            <div className="hover:bg-[#478CCF] py-6">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "" : "hidden"
+              }`}
+            >
               <div
-                className="flex items-center text-black/70 pl-8 hover:cursor-pointer"
+                className="flex items-center text-black/70 pl-8"
                 onClick={() => router.push("/panel/administrarCiclistas")}
               >
                 <FaBicycle size={"30px"} />
@@ -71,9 +111,13 @@ function Dashboard({ children }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <div className="hover:bg-[#478CCF] py-6">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "" : "hidden"
+              }`}
+            >
               <div
-                className="flex items-center text-black/70 pl-8 hover:cursor-pointer"
+                className="flex items-center text-black/70 pl-8"
                 onClick={() => router.push("/panel/administrarMasajistas")}
               >
                 <TbMassage size={"30px"} />
@@ -82,14 +126,48 @@ function Dashboard({ children }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <div className="hover:bg-[#478CCF] py-6">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "" : "hidden"
+              }`}
+            >
               <div
-                className="flex items-center text-black/70 pl-8 hover:cursor-pointer"
+                className="flex items-center text-black/70 pl-8"
                 onClick={() => router.push("/panel/administrarDirectores")}
               >
                 <FiUsers size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
                   Administrar directores
+                </p>
+              </div>
+            </div>
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "" : "hidden"
+              }`}
+            >
+              <div
+                className="flex items-center text-black/70 pl-8"
+                onClick={() => router.push("/panel/administrarCarreras")}
+              >
+                <GiMountainRoad size={"30px"} />
+                <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
+                  Administrar carreras
+                </p>
+              </div>
+            </div>
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isDirectorDeportivo ? "" : "hidden"
+              }`}
+            >
+              <div
+                className="flex items-center text-black/70 pl-8"
+                onClick={() => router.push("/panel/inscribirseCarrera")}
+              >
+                <GiMountainRoad size={"30px"} />
+                <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
+                  Inscripción carreras
                 </p>
               </div>
             </div>
@@ -104,7 +182,10 @@ function Dashboard({ children }: DashboardProps) {
               ISUCI 🚵
             </p>
           </div>
-          <div className="flex items-center p-2 bg-red-500 rounded">
+          <div
+            className="flex items-center p-2 bg-red-500 rounded hover:cursor-pointer hover:bg-red-600"
+            onClick={() => signOut()}
+          >
             <p className="mr-1 text-xl font-bold px-2 rounded-sm text-white">
               Cerrar sesión
             </p>
