@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import bcrypt from "bcryptjs";
 import { Pais } from "@/interfaces/Paises";
 import { ChangeEvent, useState, useEffect } from "react";
 import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
@@ -11,7 +10,7 @@ function Register() {
   const [nombre, setNombre] = useState("");
   const [cedula, setCedula] = useState("");
   const [correoElectronico, setCorreoElectronico] = useState("");
-  const [contrasena, setContrasena] = useState("1234");
+  const [contrasena, setContrasena] = useState("");
   const [genero, setGenero] = useState("");
   const [edad, setEdad] = useState("");
   const [experiencia, setExperiencia] = useState("");
@@ -44,7 +43,7 @@ function Register() {
       const randomIndex = Math.floor(Math.random() * characters.length);
       password += characters[randomIndex];
     }
-    setContrasena("1234");
+    return password;
   }
 
   async function crearCiclista(
@@ -58,8 +57,7 @@ function Register() {
     contextura: string,
     nacionalidad: string
   ) {
-    crearContraseña();
-    var hash = await bcrypt.hashSync(contrasena, 10);
+    setContrasena(crearContraseña());
     const res = await fetch("/api/ciclista", {
       method: "POST",
       headers: {
@@ -69,7 +67,7 @@ function Register() {
         nombre,
         cedula,
         correoElectronico,
-        contrasena: hash,
+        contrasena: contrasena,
         genero,
         edad: parseInt(edad),
         experiencia: parseInt(experiencia),
@@ -90,8 +88,7 @@ function Register() {
     edad: string,
     nacionalidad: string
   ) {
-    crearContraseña();
-    var hash = await bcrypt.hashSync("1234", 10);
+    setContrasena(crearContraseña());
     const res = await fetch("/api/directorDeportivo", {
       method: "POST",
       headers: {
@@ -101,7 +98,7 @@ function Register() {
         nombre,
         cedula,
         correoElectronico,
-        contrasena: hash,
+        contrasena: contrasena,
         genero,
         edad: parseInt(edad),
         nacionalidad,
@@ -119,9 +116,7 @@ function Register() {
     edad: string,
     experiencia: string
   ) {
-    crearContraseña();
-    var hash = await bcrypt.hash("1234", 10);
-    console.log(hash);
+    setContrasena(crearContraseña());
     const res = await fetch("/api/masajista", {
       method: "POST",
       headers: {
@@ -131,7 +126,7 @@ function Register() {
         nombre,
         cedula,
         correoElectronico,
-        contrasena: hash,
+        contrasena: contrasena,
         genero,
         edad: parseInt(edad),
         experiencia: parseInt(experiencia),
@@ -142,20 +137,20 @@ function Register() {
     return data;
   }
 
-  // async function enviarEmail(correoElectronico: string, contrasena: string) {
-  //   const res = await fetch("/api/email", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       correoElectronico,
-  //       contrasena,
-  //     }),
-  //   });
-  //   const data = await res.json();
-  //   return data;
-  // }
+  async function enviarEmail(correoElectronico: string, contrasena: string) {
+    const res = await fetch("/api/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        correoElectronico,
+        contrasena,
+      }),
+    });
+    const data = await res.json();
+    return data;
+  }
 
   const fetchPaises = async () => {
     try {
@@ -171,6 +166,7 @@ function Register() {
 
   useEffect(() => {
     fetchPaises();
+    setContrasena(crearContraseña());
   }, []);
 
   const handleNombreChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -310,8 +306,8 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          //await enviarEmail(correoElectronico, contrasena);
           router.push("/");
+          await enviarEmail(correoElectronico, contrasena);
         }
       } else if (rol === "2") {
         const dataMasajista = await crearMasajista(
@@ -333,10 +329,8 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          // const dataEmail = await enviarEmail(correoElectronico, contrasena);
-          console.log(dataMasajista);
-          // console.log(dataEmail);
           router.push("/");
+          await enviarEmail(correoElectronico, contrasena);
         }
       } else if (rol === "3") {
         const dataDirector = await crearDirector(
@@ -358,8 +352,8 @@ function Register() {
             "Usuario registrado",
             "Se enviará al correo la información de acceso"
           );
-          // await enviarEmail(correoElectronico, contrasena);
           router.push("/");
+          await enviarEmail(correoElectronico, contrasena);
         }
       }
     }
@@ -368,7 +362,7 @@ function Register() {
   return (
     <div className="md:p-20 h-screen max-md:py-10  flex justify-center items-center">
       <div className="w-full max-xl:w-full container">
-        <div className="w-full flex flex-wrap bg-bg-dark-secondary rounded-2xl">
+        <div className="w-full flex flex-wrap bg-bg-dark-secondary rounded-2xl shadow-xl">
           <div className="hidden lg:block lg:w-1/2 lg:h-auto w-full h-52 relative lg:rounded-l-2xl max-lg:rounded-xl lg:order-2 order-2 max-lg:mt-5">
             <div
               className="absolute inset-0 lg:rounded-l-2xl rounded-b-2xl brightness-[0.8]"
@@ -382,13 +376,13 @@ function Register() {
           </div>
           <div className="lg:w-1/2 xl:p-5 lg:!p-12 p-10 !pb-6 max-sm:p-14 rounded-r-2xl max-lg:rounded-xl lg:order-1 order-1">
             <div>
-              <h1 className="text-3xl font-semibold xl:mb-2 mb-4 w-full py-1 text-white">
+              <h1 className="text-3xl font-extrabold xl:mb-2 mb-4 w-full py-1 text-black">
                 Registro 🚵
               </h1>
             </div>
             <form>
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Nombre Completo
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.nombreInput}
@@ -396,7 +390,7 @@ function Register() {
                 </p>
               </label>
               <input
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="text"
                 value={nombre}
                 onChange={handleNombreChange}
@@ -405,7 +399,7 @@ function Register() {
                 autoComplete="name"
               />
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Cédula de ciudadanía
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.cedulaInput}
@@ -413,7 +407,7 @@ function Register() {
                 </p>
               </label>
               <input
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="number"
                 value={cedula}
                 onChange={handleCedulaChange}
@@ -422,7 +416,7 @@ function Register() {
                 autoComplete="cedula"
               />
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Correo electrónico
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.correoInput}
@@ -430,7 +424,7 @@ function Register() {
                 </p>
               </label>
               <input
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="email"
                 value={correoElectronico}
                 onChange={handleCorreoChange}
@@ -439,7 +433,7 @@ function Register() {
                 autoComplete="email"
               />
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Genero
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.generoInput}
@@ -448,7 +442,7 @@ function Register() {
               </label>
               <select
                 onChange={handleGeneroChange}
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
               >
                 <option disabled selected>
                   -- Selecciona genero --
@@ -457,7 +451,7 @@ function Register() {
                 <option value="FEMENINO">Femenino</option>
               </select>
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Edad
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.edadInput}
@@ -465,7 +459,7 @@ function Register() {
                 </p>
               </label>
               <input
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="number"
                 value={edad}
                 onChange={handleEdadChange}
@@ -474,7 +468,7 @@ function Register() {
                 autoComplete="edad"
               />
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Experiencia (años)
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.experienciaInput}
@@ -482,7 +476,7 @@ function Register() {
                 </p>
               </label>
               <input
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="number"
                 value={experiencia}
                 onChange={handleExperienciaChange}
@@ -491,7 +485,7 @@ function Register() {
                 autoComplete="experiencia"
               />
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Nacionalidad
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.nacionalidadInput}
@@ -509,11 +503,11 @@ function Register() {
                 </p>
               </label>
               {loadingPaises ? (
-                <p className="text-white/80 font-medium">Cargando países...</p>
+                <p className="text-black font-medium">Cargando países...</p>
               ) : (
                 <select
                   onChange={handleNacionalidadChange}
-                  className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
+                  className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 >
                   <option disabled selected>
                     -- Selecciona tu Nacionalidad --
@@ -528,7 +522,7 @@ function Register() {
                 </select>
               )}
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Rol
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.rolInput}
@@ -537,7 +531,7 @@ function Register() {
               </label>
               <select
                 onChange={handleRolChange}
-                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
+                className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
               >
                 <option disabled selected>
                   -- Selecciona rol --
@@ -550,7 +544,7 @@ function Register() {
               {rol === "1" ? (
                 <div>
                   <label>
-                    <p className="text-white/80 font-medium">
+                    <p className="text-black font-medium">
                       Especialidad
                       <span className="text-red-500 font-medium text-sm select-none">
                         {infoFormulario.especialidadInput}
@@ -559,7 +553,7 @@ function Register() {
                   </label>
                   <select
                     onChange={handleEspecialidadChange}
-                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
+                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                   >
                     <option disabled selected>
                       -- Selecciona tu especialidad --
@@ -572,7 +566,7 @@ function Register() {
                     <option value="CONTRARRELOJISTA">Contrarrelojista</option>
                   </select>
                   <label>
-                    <p className="text-white/80 font-medium">
+                    <p className="text-black font-medium">
                       Contextura
                       <span className="text-red-500 font-medium text-sm select-none">
                         {infoFormulario.contexturaInput}
@@ -581,7 +575,7 @@ function Register() {
                   </label>
                   <select
                     onChange={handleContexturaChange}
-                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/30 border-none focus:outline-none text-black/90 font-bold placeholder:text-white/20"
+                    className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 font-bold placeholder:text-black/50"
                   >
                     <option disabled selected>
                       -- Selecciona tu contextura --

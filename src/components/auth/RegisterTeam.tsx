@@ -9,6 +9,7 @@ import CardDelete from "@/components/cards/CardDelete";
 import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
 import { TbMassage } from "react-icons/tb";
 import { IoBicycle } from "react-icons/io5";
+import { useRouter } from "next/navigation";
 
 function RegisterTeam() {
   const [nombreEscuadra, setNombreEscuadra] = useState("");
@@ -33,6 +34,8 @@ function RegisterTeam() {
     masajistaInput: "",
     masajistaUniqueInput: "",
   });
+
+  const router = useRouter();
 
   const fetchPaises = async () => {
     try {
@@ -180,7 +183,8 @@ function RegisterTeam() {
       successAlert(
         "Escuadra registrada",
         "La escuadra ha sido registrada con éxito"
-      );
+      )
+      location.reload();
     }
   };
 
@@ -188,13 +192,13 @@ function RegisterTeam() {
     <div className="py-2 flex justify-center items-center m-3">
       <div className="w-full max-xl:w-full container">
         <div>
-          <h1 className="text-3xl font-semibold xl:mb-2 mb-4 w-full py-1 text-white">
+          <h1 className="text-3xl font-bold xl:mb-2 mb-4 w-full py-1 text-black">
             Registro Escuadras
           </h1>
         </div>
         <form>
           <label>
-            <p className="text-white/80 font-medium">
+            <p className="text-black font-medium">
               Nombre Escuadra
               <span className="text-red-500 font-medium text-sm select-none">
                 {infoFormulario.nombreEscuadraInput}
@@ -202,7 +206,7 @@ function RegisterTeam() {
             </p>
           </label>
           <input
-            className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+            className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
             type="text"
             value={nombreEscuadra}
             onChange={handleNombreEscuadraChange}
@@ -211,7 +215,7 @@ function RegisterTeam() {
             autoComplete="name"
           />
           <label>
-            <p className="text-white/80 font-medium">
+            <p className="text-black font-medium">
               País de Origen
               <span className="text-red-500 font-medium text-sm select-none">
                 {infoFormulario.paisOrigenInput}
@@ -229,11 +233,11 @@ function RegisterTeam() {
             </p>
           </label>
           {loadingPaises ? (
-            <p className="text-white/80 font-medium">Cargando países...</p>
+            <p className="text-black font-medium">Cargando países...</p>
           ) : (
             <select
               onChange={handlePaisOrigenChange}
-              className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-white/30 border-none focus:outline-none text-black/90 placeholder:text-white/20"
+              className="w-full h-10 pl-5 pr-3 rounded-md mb-3 mt-1 font-bold bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
             >
               <option disabled selected>
                 -- Selecciona un país --
@@ -248,7 +252,7 @@ function RegisterTeam() {
             </select>
           )}
           <label>
-            <p className="text-white/80 font-medium">
+            <p className="text-black font-medium">
               Ciclistas seleccionados
               <span className="text-red-500 font-medium text-sm select-none">
                 {infoFormulario.ciclistaInput}
@@ -280,7 +284,7 @@ function RegisterTeam() {
             </div>
           }
           <label>
-            <p className="text-white/80 font-medium">
+            <p className="text-black font-medium">
               Masajista seleccionado
               <span className="text-red-500 font-medium text-sm select-none">
                 {infoFormulario.masajistaInput}
@@ -305,7 +309,7 @@ function RegisterTeam() {
             </div>
           }
           <label>
-            <p className="text-white/80 font-medium">Ciclistas disponibles</p>
+            <p className="text-black font-medium">Ciclistas disponibles</p>
           </label>
           <div className="w-full max-h-60 overflow-y-auto mb-2 scrollbar-hide">
             {ciclistas
@@ -330,9 +334,7 @@ function RegisterTeam() {
           {masajistaSeleccionado === null ? (
             <div>
               <label>
-                <p className="text-white/80 font-medium">
-                  Masajistas disponibles
-                </p>
+                <p className="text-black font-medium">Masajistas disponibles</p>
               </label>
               <div className="w-full max-h-60 overflow-y-auto mb-2 scrollbar-hide">
                 {masajistas
@@ -358,7 +360,7 @@ function RegisterTeam() {
             </div>
           ) : null}
           <button
-            className="w-full bg-bg-green-secondary hover:bg-[#3C5B6F] transition-all h-10 rounded-md text-white font-medium mb-3"
+            className="w-full bg-bg-green-secondary hover:bg-[#4535C1] transition-all h-10 rounded-md text-white font-medium mb-3"
             type="button"
             onClick={handleLogin}
           >

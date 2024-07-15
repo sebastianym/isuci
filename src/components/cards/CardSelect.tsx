@@ -12,22 +12,22 @@ interface CardProps {
 
 function Card({ nombre, especialidad, cedula, icon, onAdd }: CardProps) {
   return (
-    <div className="container mx-auto bg-gray-800 flex items-center justify-between m-2 rounded-md p-2 w-full">
+    <div className="container mx-auto bg-white flex items-center justify-between m-2 rounded-md p-2 w-full shadow-md">
       <div className="flex items-center justify-between p-1">
-        <div className="flex justify-center items-center mr-3 bg-black p-5 rounded-md">
+        <div className="flex justify-center items-center mr-3 bg-black/80 p-5 rounded-md">
           {icon}
         </div>
         <div>
-          <h2 className="font-bold text-white text-md">
+          <h2 className="font-bold text-black text-md">
             {nombre} ({especialidad})
           </h2>
-          <p className="text-gray-300"></p>
-          <p className="text-gray-300">{cedula}</p>
+          <p className="text-black"></p>
+          <p className="text-black">{cedula}</p>
         </div>
       </div>
       <div className="flex">
         <button
-          className="flex bg-slate-500 rounded-md justify-between items-center p-2 mr-2"
+          className="flex bg-[#478CCF] rounded-md justify-between items-center p-2 mr-2"
           onClick={onAdd}
         >
           <div className="text-white">Seleccionar</div>

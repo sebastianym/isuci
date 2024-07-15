@@ -68,7 +68,7 @@ function AdminMasajista() {
 
   return (
     <div className="p-10">
-      <h2 className="py-10 font-bold text-white text-3xl">
+      <h2 className="py-10 font-bold text-black text-3xl">
         Administrar masajistas 💆
       </h2>
       <table className="w-full table-auto  bg-bg-dark-secondary rounded-lg shadow-md">
@@ -83,13 +83,13 @@ function AdminMasajista() {
         <tbody>
           {masajistas.map((masajista) => (
             <tr key={masajista.id} className="text-center">
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {masajista.nombre}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {masajista.cedula}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {masajista.escuadraId ? "Sí" : "No"}
               </td>
               <td className="p-4 border-b border-gray-200">

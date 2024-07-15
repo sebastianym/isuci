@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
+import bcrypt from "bcryptjs";
 
 interface Params {
   params: { id: string };
@@ -36,6 +37,8 @@ export async function POST(request: Request, { params }: Params) {
       edad,
       nacionalidad,
     } = await request.json();
+
+    var hash = await bcrypt.hashSync(contrasena, 10);
 
     const ciclistaCorreo = await prisma.ciclista.findUnique({
       where: {
@@ -84,7 +87,7 @@ export async function POST(request: Request, { params }: Params) {
         nombre,
         cedula,
         correoElectronico,
-        contrasena,
+        contrasena: hash,
         genero,
         edad,
         nacionalidad,

@@ -14,7 +14,7 @@ function Home() {
   }, []);
 
   return (
-    <main className="absolute top-0 z-[-2] w-full bg-neutral-950">
+    <main className="absolute top-0 z-[-2] w-full bg-bg-white-primary">
       <Login></Login>
     </main>
   );

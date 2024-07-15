@@ -1,28 +1,41 @@
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
-const OAuth2 = google.auth.OAuth2;
-const accountTranssport = require("@/account_transport.json");
+
+const oAuth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  process.env.NEXTAUTH_URL
+);
+
+oAuth2Client.setCredentials({
+  refresh_token: process.env.REFRESH_TOKEN,
+});
 
 export async function POST(request: Request) {
-  const { correoElectronico, contrasena } = await request.json();
-
-  const transport = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: process.env.MAIL_USERNAME,
-      clientId: process.env.OAUTH_CLIENTID,
-      clientSecret: process.env.OAUTH_CLIENT_SECRET,
-      refreshToken: process.env.OAUTH_REFRESH_TOKEN,
-    },
-  });
-
   try {
-    await transport.verify();
+    const { correoElectronico, contrasena } = await request.json();
+
+    const accessToken = await oAuth2Client.getAccessToken();
+    if (!accessToken.token) {
+      throw new Error("Failed to obtain access token");
+    }
+
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.MAIL_USER,
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+        accessToken: accessToken.token,
+      },
+      tls: { rejectUnauthorized: false },
+    });
 
     const mailOptions = {
-      from: "isuci@isuci.com",
+      from: process.env.MAIL_USER,
       to: correoElectronico,
       subject: "Aquí están tus credenciales de acceso",
       text: `Correo Electrónico: ${correoElectronico} Contraseña: ${contrasena}`,

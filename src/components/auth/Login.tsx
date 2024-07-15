@@ -31,7 +31,7 @@ function Login() {
       ? (updatedInfoForm.correoInput = " - Campo obligatorio")
       : (updatedInfoForm.correoInput = "");
     contraseña === ""
-      ? (updatedInfoForm.contraseñaInput = " - Campo obligatoria")
+      ? (updatedInfoForm.contraseñaInput = " - Campo obligatorio")
       : (updatedInfoForm.contraseñaInput = "");
 
     setInfoFormulario(updatedInfoForm);
@@ -69,7 +69,7 @@ function Login() {
   return (
     <div className="md:p-20 h-screen max-md:py-10  flex justify-center items-center">
       <div className="w-full max-xl:w-full container">
-        <div className="w-full flex flex-wrap bg-bg-dark-secondary rounded-2xl">
+        <div className="w-full flex flex-wrap bg-bg-dark-secondary rounded-2xl shadow-xl">
           <div className="hidden lg:block lg:w-1/2 lg:h-auto w-full h-52 relative lg:rounded-l-2xl max-lg:rounded-xl lg:order-2 order-2 max-lg:mt-5">
             <div
               className="absolute inset-0 lg:rounded-l-2xl rounded-b-2xl brightness-[0.8]"
@@ -83,19 +83,19 @@ function Login() {
           </div>
           <div className="lg:w-1/2 mt-5 xl:p-20 lg:!p-12 p-12 !pb-6 max-sm:p-14 rounded-r-2xl max-lg:rounded-xl lg:order-1 order-1">
             <div className="my-5">
-              <h1 className="text-3xl font-semibold xl:mb-8 mb-10 w-full py-5 text-white">
+              <h1 className="text-3xl font-extrabold xl:mb-8 mb-10 w-full py-5 text-black">
                 ISUCI 🚵
               </h1>
             </div>
-            <h2 className="text-xl font-semibold mb-3 text-white/80">
+            <h2 className="text-xl font-semibold mb-3 text-black">
               Iniciar sesión
             </h2>
-            <p className="mb-8 text-bg-black max-xl:text-justify text-white/50">
+            <p className="mb-8 text-bg-black max-xl:text-justify text-black/80">
               A continuación ingresa tus datos para acceder al sistema.
             </p>
             <form>
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Correo electrónico
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.correoInput}
@@ -103,7 +103,7 @@ function Login() {
                 </p>
               </label>
               <input
-                className="w-full h-12  pl-5 pr-3 rounded-md mb-5 mt-2 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-12  pl-5 pr-3 rounded-md mb-5 mt-2 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="email"
                 value={correo}
                 onChange={handleUsernameChange}
@@ -113,7 +113,7 @@ function Login() {
               />
               <br />
               <label>
-                <p className="text-white/80 font-medium">
+                <p className="text-black font-medium">
                   Contraseña
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.contraseñaInput}
@@ -121,7 +121,7 @@ function Login() {
                 </p>
               </label>
               <input
-                className="w-full h-12  pl-5 pr-3 rounded-md mb-7 mt-2 bg-white/10 border-none focus:outline-none text-white/50 placeholder:text-white/20"
+                className="w-full h-12  pl-5 pr-3 rounded-md mb-7 mt-2 bg-black/10 border-none focus:outline-none text-black/80 placeholder:text-black/50"
                 type="password"
                 value={contraseña}
                 onChange={handlePasswordChange}

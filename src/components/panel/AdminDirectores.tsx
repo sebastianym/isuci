@@ -69,7 +69,7 @@ function AdminDirectores() {
 
   return (
     <div className="p-10">
-      <h2 className="py-10 font-bold text-white text-3xl">
+      <h2 className="py-10 font-bold text-black text-3xl">
         Administrar directores deportivos 👨‍💼
       </h2>
       <table className="w-full table-auto  bg-bg-dark-secondary rounded-lg shadow-md">
@@ -84,13 +84,13 @@ function AdminDirectores() {
         <tbody>
           {directores.map((director) => (
             <tr key={director.id} className="text-center">
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {director.nombre}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {director.cedula}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {director.escuadraId ? "Sí" : "No"}
               </td>
               <td className="p-4 border-b border-gray-200">

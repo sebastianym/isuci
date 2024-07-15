@@ -14,15 +14,25 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
+        // // Primary background color
+
+        // "bg-dark-primary": "#1f2125",
+        // "bg-white-primary": "#eaeaec",
+
+        // // Secondary background color
+        // "bg-dark-secondary": "#161819",
+        // "bg-white-secondary": "#f5f7f9",
+        // "bg-green-secondary": "#577B8D",
+
         // Primary background color
 
         "bg-dark-primary": "#1f2125",
-        "bg-white-primary": "#eaeaec",
+        "bg-white-primary": "#F3F3F7",
 
         // Secondary background color
-        "bg-dark-secondary": "#161819",
+        "bg-dark-secondary": "#FFFFFF",
         "bg-white-secondary": "#f5f7f9",
-        "bg-green-secondary": "#577B8D",
+        "bg-green-secondary": "#478CCF",
 
         // Text color
 

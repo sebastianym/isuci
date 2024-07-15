@@ -69,10 +69,10 @@ function AdminCiclistas() {
 
   return (
     <div className="p-10">
-      <h2 className="py-10 font-bold text-white text-3xl">
+      <h2 className="py-10 font-bold text-black text-3xl">
         Administrar ciclistas 🚴
       </h2>
-      <table className="w-full table-auto  bg-bg-dark-secondary rounded-lg shadow-md">
+      <table className="w-full table-auto  bg-bg-dark-secondary rounded-lg shadow-lg">
         <thead>
           <tr className="bg-neutral-950 text-white">
             <th className="p-4 text-xl">Nombre</th>
@@ -86,19 +86,19 @@ function AdminCiclistas() {
         <tbody>
           {ciclistas.map((ciclista) => (
             <tr key={ciclista.id} className="text-center">
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {ciclista.nombre}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {ciclista.cedula}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {ciclista.especialidad}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {ciclista.contextura}
               </td>
-              <td className="p-4 border-b border-gray-100 text-white/80 font-semibold">
+              <td className="p-4 border-b border-gray-100 text-black/80 font-semibold">
                 {ciclista.escuadraId ? "Sí" : "No"}
               </td>
               <td className="p-4 border-b border-gray-200">
