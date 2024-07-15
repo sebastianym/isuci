@@ -9,7 +9,7 @@ import {
 } from "@/libs/functions/popUpAlert";
 import CardCarrera from "@/components/cards/CardCarreraInscribirse";
 
-function inscribirseCarrera() {
+function InscribirseCarrera() {
   const [carreras, setCarreras] = useState<TypeCarrera[]>([]);
 
   async function loadCarreras() {
@@ -91,4 +91,4 @@ function inscribirseCarrera() {
   );
 }
 
-export default inscribirseCarrera;
+export default InscribirseCarrera;

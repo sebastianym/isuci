@@ -111,8 +111,6 @@ function AdminEscuadras() {
     fetchPaises();
     loadCiclistas();
     loadMasajistas();
-    console.log(ciclistas);
-    console.log(masajistas);
   }, []);
 
   const handleNombreEscuadraChange = (event: ChangeEvent<HTMLInputElement>) => {

@@ -24,7 +24,6 @@ function AdminCiclistas() {
 
   useEffect(() => {
     loadCiclistas();
-    console.log(ciclistas);
   }, []);
 
   async function deleteCiclista(id: string) {

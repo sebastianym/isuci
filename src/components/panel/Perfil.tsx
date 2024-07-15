@@ -8,7 +8,7 @@ import { TypeCiclista } from "@/interfaces/Ciclista";
 import { TypeDirector } from "@/interfaces/DirectorDeportivo";
 import { getSession } from "next-auth/react";
 
-function crearCarrera() {
+function Perfil() {
   const [id, setId] = useState<number | null>(null);
   const [rol, setRol] = useState<string | null>(null);
   const [informacionPerfil, setInformacionPerfil] = useState<
@@ -101,4 +101,4 @@ function crearCarrera() {
   );
 }
 
-export default crearCarrera;
+export default Perfil;

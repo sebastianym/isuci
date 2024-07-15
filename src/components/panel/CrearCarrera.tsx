@@ -4,7 +4,7 @@ import { ChangeEvent, useState, useEffect } from "react";
 import { successAlert, errorAlert } from "@/libs/functions/popUpAlert";
 import { useRouter } from "next/navigation";
 
-function crearCarrera() {
+function CrearCarrera() {
   const [nombreCarrera, setNombreCarrera] = useState("");
   const [tipoEtapa, setTipoEtapa] = useState("");
   const [infoFormulario, setInfoFormulario] = useState({
@@ -132,4 +132,4 @@ function crearCarrera() {
   );
 }
 
-export default crearCarrera;
+export default CrearCarrera;

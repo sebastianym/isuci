@@ -24,7 +24,6 @@ function AdminDirectores() {
 
   useEffect(() => {
     loadDirectores();
-    console.log(directores);
   }, []);
 
   async function deleteDirector(id: string) {
