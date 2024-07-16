@@ -383,7 +383,7 @@ function Register() {
             <form>
               <label>
                 <p className="text-black font-medium">
-                  Nombre Completo
+                  Nombre completo
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.nombreInput}
                   </span>
@@ -400,7 +400,7 @@ function Register() {
               />
               <label>
                 <p className="text-black font-medium">
-                  Cédula de ciudadanía
+                  Documento de identificación
                   <span className="text-red-500 font-medium text-sm select-none">
                     {infoFormulario.cedulaInput}
                   </span>
