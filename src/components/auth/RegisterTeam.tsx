@@ -188,6 +188,7 @@ function RegisterTeam() {
         "Escuadra registrada",
         "La escuadra ha sido registrada con éxito"
       )
+      router.push("/panel/verEscuadra");
     }
   };
 

@@ -4,13 +4,13 @@ import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import React, { ReactNode } from "react";
 import { FaUsers, FaBicycle } from "react-icons/fa";
-import { IoBicycle } from "react-icons/io5";
+import { IoBicycle, IoMenu } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { GiMountainRoad } from "react-icons/gi";
 import { FiUsers } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-import { IoMenu } from "react-icons/io5";
 import { TbMassage } from "react-icons/tb";
+import { TypeDirector } from "@/interfaces/DirectorDeportivo";
 
 interface DashboardProps {
   children: ReactNode;
@@ -18,17 +18,50 @@ interface DashboardProps {
 
 function Dashboard({ children }: DashboardProps) {
   const router = useRouter();
+  const [id, setId] = useState<number | null>(null);
+  const [rol, setRol] = useState<string | null>(null);
+  const [informacionPerfil, setInformacionPerfil] = useState<TypeDirector | null>(null);
+  const [hasEscuadra, setHasEscuadra] = useState<boolean>(false);
   const { data: session, status } = useSession();
-  const [directorDeportivo, setDirectorDeportivo] = useState<number | null>(
-    null
-  );
+
+  const loadPerfil = async () => {
+    try {
+      let res;
+      switch (rol) {
+        case "DIRECTOR_DEPORTIVO":
+          res = await fetch(`/api/directorDeportivo/${id}`);
+          break;
+        default:
+          throw new Error("El rol no es de director");
+      }
+
+      if (!res.ok) {
+        throw new Error("No se pudo cargar la información del perfil");
+      }
+
+      const data = await res.json();
+      setInformacionPerfil(data);
+      setHasEscuadra(data.escuadraId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     if (status === "loading") return;
     if (!session) {
       router.replace("/");
+    } else {
+      setRol(session.user.role);
+      setId(parseInt(session.user.id));
     }
   }, [session, status, router]);
+
+  useEffect(() => {
+    if (id !== null && rol !== null) {
+      loadPerfil();
+    }
+  }, [id, rol]);
 
   if (status === "loading") {
     return;
@@ -40,6 +73,7 @@ function Dashboard({ children }: DashboardProps) {
 
   const isAdmin = session.user.role === "ADMIN";
   const isDirectorDeportivo = session.user.role === "DIRECTOR_DEPORTIVO";
+
   return (
     <div className="flex h-screen shadow-xl">
       <div className="w-96 bg-white lg:flex flex-col hidden">
@@ -49,7 +83,10 @@ function Dashboard({ children }: DashboardProps) {
           </p>
           <nav className="flex flex-col space-y-2">
             <div className="hover:bg-[#478CCF] py-6">
-              <div className="flex items-center text-black/70 pl-8">
+              <div
+                className="flex items-center text-black/70 pl-8"
+                onClick={() => router.push("/panel/perfil")}
+              >
                 <CgProfile size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
                   Tu perfil
@@ -70,7 +107,7 @@ function Dashboard({ children }: DashboardProps) {
             </div>
             <div
               className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
-                isDirectorDeportivo ? "" : "hidden"
+                isDirectorDeportivo && !hasEscuadra ? "" : "hidden"
               }`}
             >
               <div
@@ -85,12 +122,12 @@ function Dashboard({ children }: DashboardProps) {
             </div>
             <div
               className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
-                isDirectorDeportivo ? "" : "hidden"
+                isDirectorDeportivo && hasEscuadra ? "" : "hidden"
               }`}
             >
               <div
                 className="flex items-center text-black/70 pl-8 "
-                onClick={() => router.push("/panel")}
+                onClick={() => router.push("/panel/verEscuadra")}
               >
                 <FaUsers size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">

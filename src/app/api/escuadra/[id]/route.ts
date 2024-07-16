@@ -7,18 +7,25 @@ interface Params {
 }
 
 //Traer una escuadra en especifico por su id
-export async function GET(request: Request, { params }: Params) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const escuadra = await prisma.escuadra.findFirst({
       where: {
         id: Number(params.id),
+      },
+      include: {
+        ciclistas: true, // Incluir la relación con los ciclistas
+        masajista: true, // Incluir la relación con los masajistas
       },
     });
 
     if (!escuadra) {
       return NextResponse.json(
         {
-          message: "escuadra no encontrada",
+          message: "Escuadra no encontrada",
         },
         {
           status: 404,
