@@ -7,19 +7,19 @@ interface Params {
 }
 
 //Traer todas las carreras
-export async function GET(request: Request, { params }: Params) {
+export async function GET(request: Request) {
   try {
-    const carreras = await prisma.carrera.findMany();
+    const carreras = await prisma.carrera.findMany({
+      include: {
+        escuadras: true,
+      },
+    });
     return NextResponse.json(carreras);
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json(
-        {
-          message: error.message,
-        },
-        {
-          status: 500,
-        }
+        { message: error.message },
+        { status: 500 }
       );
     }
   }

@@ -20,7 +20,8 @@ function Dashboard({ children }: DashboardProps) {
   const router = useRouter();
   const [id, setId] = useState<number | null>(null);
   const [rol, setRol] = useState<string | null>(null);
-  const [informacionPerfil, setInformacionPerfil] = useState<TypeDirector | null>(null);
+  const [informacionPerfil, setInformacionPerfil] =
+    useState<TypeDirector | null>(null);
   const [hasEscuadra, setHasEscuadra] = useState<boolean>(false);
   const { data: session, status } = useSession();
 
@@ -82,7 +83,11 @@ function Dashboard({ children }: DashboardProps) {
             ISUCI 🚵
           </p>
           <nav className="flex flex-col space-y-2">
-            <div className="hover:bg-[#478CCF] py-6">
+            <div
+              className={`hover:bg-[#478CCF] py-6 hover:cursor-pointer ${
+                isAdmin ? "hidden" : ""
+              }`}
+            >
               <div
                 className="flex items-center text-black/70 pl-8"
                 onClick={() => router.push("/panel/perfil")}
@@ -98,7 +103,10 @@ function Dashboard({ children }: DashboardProps) {
                 isAdmin ? "" : "hidden"
               }`}
             >
-              <div className="flex items-center text-black/70 pl-8">
+              <div
+                className="flex items-center text-black/70 pl-8"
+                onClick={() => router.push("/panel/simulacion")}
+              >
                 <IoBicycle size={"30px"} />
                 <p className="mr-1 text-2xl font-bold px-2 rounded-sm">
                   Simulación

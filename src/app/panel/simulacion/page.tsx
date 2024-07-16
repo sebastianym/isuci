@@ -2,11 +2,11 @@
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import React, { useState } from "react";
-import CreateCarrera from "@/components/panel/inscribirseCarrera";
+import CreateCarrera from "@/components/panel/Simulacion";
 import Dashboard from "@/components/panel/Dashboard";
-function InscribirseCarrera() {
+function Simulacion() {
   return (
-    <ProtectedRoute allowedRoles={["DIRECTOR_DEPORTIVO"]}>
+    <ProtectedRoute allowedRoles={["ADMIN"]}>
       <Dashboard>
         <CreateCarrera />
       </Dashboard>
@@ -14,4 +14,4 @@ function InscribirseCarrera() {
   );
 }
 
-export default InscribirseCarrera;
+export default Simulacion;

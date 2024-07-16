@@ -2,6 +2,8 @@
 import { GiMountainRoad } from "react-icons/gi";
 import { useState, useEffect } from "react";
 import { TypeCarrera } from "@/interfaces/Carrera";
+import { TypeDirector } from "@/interfaces/DirectorDeportivo";
+import { useSession } from "next-auth/react";
 import {
   confirmAlert,
   successAlert,
@@ -11,23 +13,38 @@ import CardCarrera from "@/components/cards/CardCarreraInscribirse";
 
 function InscribirseCarrera() {
   const [carreras, setCarreras] = useState<TypeCarrera[]>([]);
+  const [escuadraId, setEscuadraId] = useState<number | null>(null);
+  const { data: session, status } = useSession();
 
   async function loadCarreras() {
     try {
       const res = await fetch("/api/carrera");
       const data = await res.json();
-      console.log(data);
       setCarreras(data);
     } catch (error) {
       console.error("Error al obtener las carreras", error);
     }
   }
 
-  useEffect(() => {
-    loadCarreras();
-  }, []);
+  async function loadPerfil() {
+    if (!session) return;
+    try {
+      const res = await fetch(`/api/directorDeportivo/${session.user.id}`);
+      const data: TypeDirector = await res.json();
+      setEscuadraId(data.escuadraId);
+    } catch (error) {
+      console.error("Error al obtener el perfil del director deportivo", error);
+    }
+  }
 
-  async function inscribirse(escuadraId: string, carreraId: string) {
+  useEffect(() => {
+    if (status === "authenticated") {
+      loadPerfil();
+      loadCarreras();
+    }
+  }, [status]);
+
+  async function inscribirse(escuadraId: number, carreraId: string) {
     const res = await fetch("/api/carreraEscuadra", {
       method: "POST",
       headers: {
@@ -39,11 +56,12 @@ function InscribirseCarrera() {
       }),
     });
     const data = await res.json();
-    console.log(data);
     return data;
   }
 
-  const handleIncribirseCarrera = async (escuadraId: string, carreraId: string) => {
+  const handleIncribirseCarrera = async (carreraId: string) => {
+    if (!escuadraId) return;
+
     const confirm = await confirmAlert(
       "¿Estás seguro de inscribirte a esta carrera?",
       "Si te inscribes, no podrás deshacer esta acción"
@@ -56,7 +74,8 @@ function InscribirseCarrera() {
           "Inscripción correcta",
           "Tu escuadra se ha inscrito correctamente a la carrera"
         );
-        loadCarreras();
+        // Actualiza la lista de carreras después de inscribirse
+        setCarreras(carreras.filter((carrera) => carrera.id.toString() !== carreraId));
       } else {
         errorAlert(
           "Error al inscribirte a la carrera",
@@ -66,26 +85,30 @@ function InscribirseCarrera() {
     }
   };
 
+  const carrerasFiltradas = carreras.filter((carrera) => {
+    return (
+      carrera.disponible === "SI" &&
+      !carrera.escuadras.some((e) => e.id === escuadraId)
+    );
+  });
+
   return (
     <div className="p-10">
       <h2 className="py-10 font-bold text-black text-3xl">
         Inscripción carreras 🏁
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {carreras
-          .filter((carrera) => carrera.disponible === "SI") // Filtrar carreras habilitadas
-          .map((carrera) => (
-            <CardCarrera
-              key={carrera.id}
-              nombre={carrera.nombre}
-              tipoCarrera={carrera.tipoEtapa}
-              icon={<GiMountainRoad size="30px" style={{ color: "white" }} />}
-              onAdd={() => {
-                handleIncribirseCarrera("1",carrera.id.toString());
-                loadCarreras();
-              }}
-            />
-          ))}
+        {carrerasFiltradas.map((carrera) => (
+          <CardCarrera
+            key={carrera.id}
+            nombre={carrera.nombre}
+            tipoCarrera={carrera.tipoEtapa}
+            icon={<GiMountainRoad size="30px" style={{ color: "white" }} />}
+            onAdd={() => {
+              handleIncribirseCarrera(carrera.id.toString());
+            }}
+          />
+        ))}
       </div>
     </div>
   );
